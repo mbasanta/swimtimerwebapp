@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'base',
 
     # Local apps, referenced via appname
+    'swimapp',
 )
 
 # Place bcrypt first in the list, so it will be the default password hashing
