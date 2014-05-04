@@ -3,6 +3,7 @@
 
 # Django stuff
 Django>=1.6
+django-localflavor
 
 # Templates
 django_compressor
