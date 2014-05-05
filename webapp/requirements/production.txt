@@ -4,6 +4,7 @@
 # Django stuff
 Django>=1.6
 django-localflavor
+djangorestframework
 
 # Templates
 django_compressor
