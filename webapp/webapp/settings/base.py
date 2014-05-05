@@ -184,6 +184,8 @@ DEBUG_TOOLBAR_CONFIG = {
     'ENABLE_STACKTRACES': True,
 }
 
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
+
 # DEBUG_TOOLBAR_PANELS = (
 #     #'debug_toolbar_user_panel.panels.UserPanel',
 #     'debug_toolbar.panels.version.VersionDebugPanel',
