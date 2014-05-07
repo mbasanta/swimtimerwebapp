@@ -38,3 +38,5 @@ South
 
 # Server
 gunicorn
+# dj-static
+-e git+git://github.com/mbasanta/dj-static.git@v0.0.6#egg=dj-static
