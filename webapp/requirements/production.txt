@@ -3,6 +3,8 @@
 
 # Django stuff
 Django>=1.6
+django-localflavor
+djangorestframework
 
 # Templates
 django_compressor
@@ -33,3 +35,8 @@ South
 
 # Feature testing
 #django-waffle
+
+# Server
+gunicorn
+# dj-static
+-e git+git://github.com/mbasanta/dj-static.git@v0.0.6#egg=dj-static

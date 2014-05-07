@@ -1,0 +1,9 @@
+<h3 class="panel-header">{{ header }}</h3>
+
+<div class="list-group">
+  {% for team in my_teams %}
+  <a class="list-group-item" href="{% url 'swimapp_view_team' pk=team.id %}">{{ team }}</a>
+  {% empty %}
+    <span class="list-group-item">No teams found.</span>
+  {% endfor %}
+</div>
