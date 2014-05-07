@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.conf.urls import include, patterns, url
+from django.conf.urls.static import static
 from django.contrib import admin
 admin.autodiscover()
 
@@ -20,6 +21,9 @@ urlpatterns = patterns('',
     url(r'^bad/$', bad),
     url(r'', include('base.urls')),
 )
+
+urlpatterns += static(settings.STATIC_URL,
+                      document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
