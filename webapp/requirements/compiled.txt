@@ -3,4 +3,4 @@ psycopg2
 #MySQL-python
 
 # for bcrypt passwords
-bcrypt
+bcrypt>=1.0,<1.1

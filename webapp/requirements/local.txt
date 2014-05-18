@@ -5,6 +5,8 @@
 
 # Deployment
 Fabric
+ansible
+boto
 
 # Documentation
 Sphinx
