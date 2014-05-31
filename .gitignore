@@ -1,0 +1,16 @@
+# python stuff
+*.pyc
+
+# Vim stuff
+*.un~
+*.swp
+
+# Dev db
+db.sqlite3
+
+# Deployment stuff
+aws.cfg
+settings.json
+fab_hosts/
+**/settings/local_settings.py
+settings.yml
