@@ -1,0 +1,8 @@
+# file: pip/defaults/main.yml
+
+# Set the OS family [Debian, Fedora, Suse]
+os_family: "Debian"
+# Install with the package installer (package) or the get-pip installer (installer)
+pip_install_method: "package"
+# The url for the get-pip.py installer
+pip_install_url: "https://raw.githubusercontent.com/pypa/pip/master/contrib/get-pip.py"

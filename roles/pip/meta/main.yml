@@ -1,0 +1,30 @@
+# file: pip/meta/main.yml
+
+galaxy_info:
+  author: Matthew Basanta
+  company: mbasanta
+  description: Install Pip
+  min_ansible_version: 1.4
+  license: MIT
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  - name: Fedora
+    versions:
+    - all
+  - name: Redhad
+    versions:
+    - all
+  - name: CentOS
+    versions:
+    - all
+  - name: Suse
+    versions:
+    - all
+  categories:
+  - system
+  - python
