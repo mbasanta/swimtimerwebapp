@@ -32,7 +32,7 @@ python-memcached==1.53
 django-debug-toolbar==1.2
 
 # Migrations
-South==0.84
+South==0.8.4
 
 # Feature testing
 #django-waffle
