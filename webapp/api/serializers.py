@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.heat import Heat
+from swimapp.models.team import Team
 from swimapp.models.lane_assignment import LaneAssignment
 from rest_framework import serializers
 
@@ -55,3 +56,12 @@ class MeetSerializer(serializers.ModelSerializer):
         fields = ('meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'elevation', 'meet_type_1', 'meet_type_2',
                   'course_code_1', 'course_code_2', 'events')
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    meets = MeetSerializer(many=True)
+
+    class Meta(object):
+        model = Team
+        fields = ('team_name', 'team_abbr', 'addr_name', 'addr', 'addr_city',
+                  'addr_state', 'addr_zip', 'addr_country', 'meets')
