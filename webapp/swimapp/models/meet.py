@@ -47,6 +47,8 @@ class Meet(models.Model):
     addr_state = USStateField(blank=True, null=True)
     addr_zip = models.CharField(max_length=10, blank=True, null=True)
     addr_country = models.CharField(max_length=3, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     events = models.ManyToManyField(Event, through=MeetEvent)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
