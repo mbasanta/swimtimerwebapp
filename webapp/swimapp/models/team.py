@@ -26,6 +26,7 @@ class TeamManager(models.Manager):  # pylint: disable=R0904
 
 class Team(models.Model):
     '''Teams info'''
+    # pylint: disable=C0330
     team_abbr = models.CharField("Team Abbreviation",
                                  max_length=5,
                                  help_text="Up to five characters to "
@@ -34,12 +35,20 @@ class Team(models.Model):
     team_short_name = models.CharField("Short Team Name",
                                        max_length=16)
     team_type = models.ForeignKey(TeamType)
+    team_color1 = models.CharField(max_length=10,
+                                   blank=True,
+                                   null=True)
+    team_color2 = models.CharField(max_length=10,
+                                   blank=True,
+                                   null=True)
     addr_name = models.CharField(max_length=30)
     addr = models.CharField(max_length=30)
     addr_city = models.CharField(max_length=30)
     addr_state = USStateField()
     addr_zip = models.CharField(max_length=10)
     addr_country = models.CharField(max_length=3)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
     team_reg = models.ForeignKey(TeamRegistration)
     daytime_phone = PhoneNumberField(blank=True)
     evening_phone = PhoneNumberField(blank=True)

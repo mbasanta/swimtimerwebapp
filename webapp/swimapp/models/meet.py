@@ -7,6 +7,7 @@ from .meet_type import MeetType
 from .course_code import CourseCode
 from .event import Event
 from .meet_event import MeetEvent
+from .team import Team
 
 
 class MeetManager(models.Manager):  # pylint: disable=R0904
@@ -49,6 +50,7 @@ class Meet(models.Model):
     addr_country = models.CharField(max_length=3, blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
+    team = models.ForeignKey(Team)
     events = models.ManyToManyField(Event, through=MeetEvent)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
