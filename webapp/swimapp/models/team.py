@@ -8,8 +8,8 @@ from .team_registration import TeamRegistration
 from .team_type import TeamType
 from south.modelsinspector import add_introspection_rules
 
-add_introspection_rules([], ["^localflavor\.us\.models\.USStateField"])
-add_introspection_rules([], ["^localflavor\.us\.models\.PhoneNumberField"])
+add_introspection_rules([], [r"^localflavor\.us\.models\.USStateField"])
+add_introspection_rules([], [r"^localflavor\.us\.models\.PhoneNumberField"])
 
 
 class TeamManager(models.Manager):  # pylint: disable=R0904
