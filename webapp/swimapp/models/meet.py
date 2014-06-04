@@ -2,6 +2,7 @@
 from django.db import models
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from localflavor.us.models import USStateField
 from .meet_type import MeetType
 from .course_code import CourseCode
 from .event import Event
@@ -31,11 +32,21 @@ class Meet(models.Model):
     meet_type_1 = models.ForeignKey(MeetType,
                                     related_name='meet_type_1_set')
     meet_type_2 = models.ForeignKey(MeetType,
-                                    related_name='meet_type_2_set')
+                                    related_name='meet_type_2_set',
+                                    blank=True,
+                                    null=True)
     course_code_1 = models.ForeignKey(CourseCode,
                                       related_name='course_code_1_set')
     course_code_2 = models.ForeignKey(CourseCode,
-                                      related_name='course_code_2_set')
+                                      related_name='course_code_2_set',
+                                      blank=True,
+                                      null=True)
+    addr_name = models.CharField(max_length=30, blank=True, null=True)
+    addr = models.CharField(max_length=30, blank=True, null=True)
+    addr_city = models.CharField(max_length=30, blank=True, null=True)
+    addr_state = USStateField(blank=True, null=True)
+    addr_zip = models.CharField(max_length=10, blank=True, null=True)
+    addr_country = models.CharField(max_length=3, blank=True, null=True)
     events = models.ManyToManyField(Event, through=MeetEvent)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
