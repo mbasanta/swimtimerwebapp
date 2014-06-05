@@ -1,5 +1,6 @@
 '''Classes related to Meet Event ManyToMany relationships'''
 from django.db import models
+from django.contrib import admin
 from django.core.urlresolvers import reverse
 
 
@@ -32,3 +33,9 @@ class MeetEvent(models.Model):
         '''Get reverse URL'''
         # pylint: disable=E1101
         return reverse('swimapp_view_meet_event', args=[self.id])
+
+
+class MeetEventInline(admin.TabularInline):  # pylint: disable=R0901
+    '''Inline methods for meet events'''
+    model = MeetEvent
+    extra = 1

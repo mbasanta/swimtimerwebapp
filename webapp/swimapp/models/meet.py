@@ -2,12 +2,14 @@
 from django.db import models
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.contrib import admin
 from localflavor.us.models import USStateField
 from .meet_type import MeetType
 from .course_code import CourseCode
 from .event import Event
 from .meet_event import MeetEvent
 from .team import Team
+from .meet_event import MeetEventInline
 
 
 class MeetManager(models.Manager):  # pylint: disable=R0904
@@ -69,3 +71,8 @@ class Meet(models.Model):
         '''Get reverse url for meets'''
         # pylint: disable=E1101
         return reverse('swimapp_view_meet', args=[self.id])
+
+
+class MeetAdmin(admin.ModelAdmin):  # pylint: disable=R0904
+    '''Add inline editing for meet events'''
+    inlines = (MeetEventInline,)
