@@ -7,16 +7,17 @@ from swimapp.models.lane_assignment import LaneAssignment
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = ('id', 'username', 'email', 'groups')
+        lookup_field = 'username'
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = Group
-        fields = ('url', 'name')
+        fields = ('id', 'name')
 
 
 class LaneAssignmentSerializer(serializers.ModelSerializer):
