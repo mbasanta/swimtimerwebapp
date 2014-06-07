@@ -1,7 +1,9 @@
 '''Classes related to Event'''
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.contrib import admin
 from .stroke import Stroke
+from .meet_event import MeetEventInline
 
 
 class EventManager(models.Manager):  # pylint: disable=R0904
@@ -37,3 +39,8 @@ class Event(models.Model):
         '''Get reverse url for events'''
         # pylint: disable=E1101
         return reverse('swimapp_view_event', args=[self.id])
+
+
+class EventAdmin(admin.ModelAdmin):  # pylint: disable=R0904
+    '''Add inline edit for Events'''
+    inlines = (MeetEventInline,)
