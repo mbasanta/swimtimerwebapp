@@ -18,6 +18,7 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = Group
         fields = ('id', 'name')
+        lookup_field = 'name'
 
 
 class LaneAssignmentSerializer(serializers.ModelSerializer):

@@ -3,12 +3,22 @@ from django.http import Http404
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.team import Team
-from rest_framework import viewsets, status, generics
-from rest_framework.views import APIView
+from rest_framework import viewsets, generics
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 from api.serializers import UserSerializer, GroupSerializer
 from api.serializers import MeetSerializer, EventSerializer
 from api.serializers import TeamSerializer
+
+
+@api_view(('GET',))
+def api_root(request, format=None):
+    return Response({
+        'users': reverse('user-list', request=request, format=format),
+        'groups': reverse('group-list', request=request, format=format),
+    })
 
 
 class UserList(generics.ListCreateAPIView):
@@ -29,9 +39,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupList(generics.ListCreateAPIView):
     """
-    API endpoint that allows groups to be viewed or edited.
+    List all group, or create a new group.
+    """
+    lookup_field = 'name'
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+
+class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, update or delete a group instance.
     """
     lookup_field = 'name'
     queryset = Group.objects.all()
