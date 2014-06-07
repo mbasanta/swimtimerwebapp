@@ -57,7 +57,7 @@ class MeetSerializer(serializers.ModelSerializer):
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'elevation', 'meet_type_1', 'meet_type_2',
-                  'course_code_1', 'course_code_2', 'events')
+                  'course_code_1', 'course_code_2', 'events', 'team')
 
 
 class TeamSerializer(serializers.ModelSerializer):
