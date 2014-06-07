@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User, Group
-from django.http import Http404
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.team import Team
@@ -7,7 +6,6 @@ from rest_framework import viewsets, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.views import APIView
 from api.serializers import UserSerializer, GroupSerializer
 from api.serializers import MeetSerializer, EventSerializer
 from api.serializers import TeamSerializer
