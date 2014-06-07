@@ -47,6 +47,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class MeetSerializer(serializers.ModelSerializer):
+    '''Serializer for all meet info and dependencies'''
     events = EventSerializer(many=True)
     meet_type_1 = serializers.RelatedField(many=False)
     meet_type_2 = serializers.RelatedField(many=False)
@@ -60,8 +61,16 @@ class MeetSerializer(serializers.ModelSerializer):
                   'course_code_1', 'course_code_2', 'events', 'team')
 
 
+class ShortMeetSerializer(serializers.ModelSerializer):
+    '''Serializer for basic meet info'''
+    class Meta(object):
+        model = Meet
+        fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
+                  'age_up_date', 'elevation')
+
+
 class TeamSerializer(serializers.ModelSerializer):
-    meet_set = MeetSerializer(many=True)
+    meet_set = ShortMeetSerializer(many=True)
 
     class Meta(object):
         model = Team
