@@ -70,16 +70,3 @@ class EventViewSet(viewsets.ModelViewSet):
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
-
-
-class UserByNameDetail(APIView):
-    def get_object(self, username):
-        try:
-            return User.objects.get(username=username)
-        except User.DoesNotExist:
-            raise Http404
-
-    def get(self, request, username, format=None):
-        user = self.get_object(username)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)

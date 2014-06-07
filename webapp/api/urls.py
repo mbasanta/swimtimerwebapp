@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^users/(?P<username>[^/]+)/$',
         views.UserDetail.as_view(),
         name='user-detail'),
+
     url(r'^groups/$',
         views.GroupList.as_view(),
         name='group-list'),
