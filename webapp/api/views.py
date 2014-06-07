@@ -70,6 +70,16 @@ class MeetByTeamList(generics.ListAPIView):
         return Meet.objects.filter(team=team)
 
 
+class TeamsByUserList(generics.ListAPIView):
+    '''List all teams for a given user'''
+    serializer_class = TeamSerializer
+
+    def get_queryset(self):
+        '''Returns a list of teams for the given user'''
+        username = self.kwargs['username']
+        return Team.objects.filter(users__username=username)
+
+
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
