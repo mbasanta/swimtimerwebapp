@@ -1,0 +1,9 @@
+# file: pip/tasks/installer.yml
+
+- name: Pip | Download the Pip installer to /tmp
+  get_url:
+    url: "{{pip_install_url}}"
+    dest: "/tmp/get-pip.py"
+
+- name: Pip | Run get-pip.py to intall Pip
+  command: python /tmp/get-pip.py

@@ -1,0 +1,26 @@
+---
+- name: Apply common configuration to all nodes
+  hosts: all
+  sudo: yes
+
+  roles:
+    #- common
+
+- name: Apply webserver configuration to webserver nodes
+  hosts: webservers
+  sudo: yes
+
+  roles:
+    - pip
+    - git
+    - nginx
+    - webserver-setup
+
+- name: Install and configure PostgreSQL
+  hosts: dbservers
+  sudo: yes
+  vars_files:
+    - settings.yml
+
+  roles:
+    - postgresql

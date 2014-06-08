@@ -1,0 +1,5 @@
+# file: webserver-setup/defaults/main.yml
+
+webapp_directory: "/webserver/SwimTimer2/webapp"
+gunicorn_user: "www-data"
+supervisor_conf_dir: "/etc/supervisor"

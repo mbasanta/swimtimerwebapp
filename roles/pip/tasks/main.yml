@@ -1,0 +1,6 @@
+# file: pip/tasks/main.yml
+
+- include: package.yml
+  when: pip_install_method == "package"
+- include: installer.yml
+  when: pip_install_method == "installer"
