@@ -1,0 +1,19 @@
+# file: pip/tasks/package.yml
+
+- name: pip | Make sure the packages are installed (Debian)
+  apt:
+    pkg: python-pip
+    state: present
+  when: os_family == "Debian"
+
+- name: pip | Make sure the packages are installed (Fedora)
+  yum:
+    name: python-pip
+    state: present
+  when: os_family == "Fedora"
+
+- name: pip | Make sure the packages are installed (Suse)
+  zypper:
+    name: python-pip
+    state: present
+  when: os_family == "Suse"

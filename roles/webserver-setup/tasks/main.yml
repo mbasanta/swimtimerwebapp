@@ -1,0 +1,68 @@
+# file: webserver-config/tasks/main.yml
+
+- name: Install Python Dev Package
+  apt:
+    pkg: python-dev
+    state: present
+
+- name: Install Lynx browser for testing
+  apt:
+    pkg: lynx
+    state: present
+
+- name: Install Lib Ffi Dev Package
+  apt:
+    pkg: libffi-dev
+    state: present
+
+- name: Install gunicorn
+  apt:
+    pkg: gunicorn
+    state: present
+
+- name: Install supervisor
+  apt:
+    pkg: supervisor
+    state: present
+
+- name: Gunicorn | Make sure log directory is present
+  file:
+    path: "/var/log/gunicorn"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+- name: Gunicorn | Make sure log file is present and permissions are correct
+  file:
+    path: "/var/log/gunicorn/gunicorn.log"
+    state: touch
+    owner: "root"
+    group: "root"
+    mode: 0666
+
+- name: Gunicorn | Make sure the default site root directory is present
+  file:
+    path: "{{webapp_directory}}"
+    state: directory
+    owner: "{{gunicorn_user}}"
+    group: "{{gunicorn_user}}"
+    mode: 0755
+
+- name: Gunicorn | Set up test gunicorn appliance
+  template:
+    src: testapp.py.j2
+    dest: "{{webapp_directory}}/testapp.py"
+    owner: "{{gunicorn_user}}"
+    group: "{{gunicorn_user}}"
+    mode: 0755
+
+- name: Supervisor | Set up supervisor file
+  template:
+    src: supervisord.conf.j2
+    dest: "{{supervisor_conf_dir}}/supervisord.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart supervisor
