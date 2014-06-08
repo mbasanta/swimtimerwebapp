@@ -5,11 +5,12 @@ from django.core.urlresolvers import reverse
 from django.contrib import admin
 from localflavor.us.models import USStateField
 from .meet_type import MeetType
+from .meet_config import MeetConfig
 from .course_code import CourseCode
 from .event import Event
 from .meet_event import MeetEvent
-from .team import Team
 from .meet_event import MeetEventInline
+from .team import Team
 
 
 class MeetManager(models.Manager):  # pylint: disable=R0904
@@ -44,6 +45,7 @@ class Meet(models.Model):
                                       related_name='course_code_2_set',
                                       blank=True,
                                       null=True)
+    meet_config = models.ForeignKey(MeetConfig)
     addr_name = models.CharField(max_length=30, blank=True, null=True)
     addr = models.CharField(max_length=30, blank=True, null=True)
     addr_city = models.CharField(max_length=30, blank=True, null=True)

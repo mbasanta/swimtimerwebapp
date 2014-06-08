@@ -61,20 +61,24 @@ class MeetSerializer(serializers.ModelSerializer):
     meet_type_2 = serializers.RelatedField(many=False)
     course_code_1 = serializers.RelatedField(many=False)
     course_code_2 = serializers.RelatedField(many=False)
+    meet_config = serializers.RelatedField(many=False)
 
     class Meta(object):
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'elevation', 'meet_type_1', 'meet_type_2',
-                  'course_code_1', 'course_code_2', 'events', 'team')
+                  'course_code_1', 'course_code_2', 'meet_config', 'events',
+                  'team')
 
 
 class ShortMeetSerializer(serializers.ModelSerializer):
     '''Serializer for basic meet info'''
+    meet_config = serializers.RelatedField(many=False)
+
     class Meta(object):
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
-                  'age_up_date', 'elevation')
+                  'meet_config', 'age_up_date', 'elevation')
 
 
 class TeamSerializer(serializers.ModelSerializer):

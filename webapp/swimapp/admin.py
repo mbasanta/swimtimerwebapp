@@ -5,6 +5,7 @@ from .models import Meet, MeetType, CourseCode
 from .models import Stroke, Event, Heat, LaneAssignment
 from .models import MeetEvent
 from .models import MeetAdmin, EventAdmin
+from .models import MeetConfig
 from .models import Version
 
 
@@ -19,4 +20,5 @@ admin.site.register(Event, EventAdmin)
 admin.site.register(Heat)
 admin.site.register(LaneAssignment)
 admin.site.register(MeetEvent)
+admin.site.register(MeetConfig)
 admin.site.register(Version)
