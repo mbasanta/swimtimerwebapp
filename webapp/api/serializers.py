@@ -4,7 +4,15 @@ from swimapp.models.event import Event
 from swimapp.models.heat import Heat
 from swimapp.models.team import Team
 from swimapp.models.lane_assignment import LaneAssignment
+from swimapp.models.version import Version
 from rest_framework import serializers
+
+
+class VersionSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = Version
+        fields = ('version', 'datetime')
+        lookup_field = None
 
 
 class UserSerializer(serializers.ModelSerializer):

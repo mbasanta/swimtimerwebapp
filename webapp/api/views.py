@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.team import Team
+from swimapp.models.version import Version
 from rest_framework import viewsets, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from rest_framework.reverse import reverse
 from api.serializers import UserSerializer, GroupSerializer
 from api.serializers import MeetSerializer, EventSerializer
 from api.serializers import TeamSerializer
+from api.serializers import VersionSerializer
 
 
 @api_view(('GET',))
@@ -17,7 +19,22 @@ def api_root(request, format=None):
         'users': reverse('user-list', request=request, format=format),
         'groups': reverse('group-list', request=request, format=format),
         'meets': reverse('meet-list', request=request, format=format),
+        'latest-version': reverse('latest-version', request=request, format=format),
     })
+
+
+class LatestVersionDetail(generics.RetrieveAPIView):
+    '''Retrieves the latest application version.'''
+    serializer_class = VersionSerializer
+
+    def get_queryset(self):
+        '''Returns the versions'''
+        return Version.objects.all()
+
+    def get_object(self):
+        '''Returns the latest application version'''
+        queryset = self.get_queryset()
+        return queryset.last()
 
 
 class UserList(generics.ListCreateAPIView):
