@@ -10,3 +10,4 @@ from stroke import Stroke
 from heat import Heat
 from lane_assignment import LaneAssignment
 from meet_event import MeetEvent
+from version import Version
