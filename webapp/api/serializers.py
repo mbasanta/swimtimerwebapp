@@ -4,7 +4,15 @@ from swimapp.models.event import Event
 from swimapp.models.heat import Heat
 from swimapp.models.team import Team
 from swimapp.models.lane_assignment import LaneAssignment
+from swimapp.models.version import Version
 from rest_framework import serializers
+
+
+class VersionSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = Version
+        fields = ('version', 'datetime')
+        lookup_field = None
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -53,20 +61,24 @@ class MeetSerializer(serializers.ModelSerializer):
     meet_type_2 = serializers.RelatedField(many=False)
     course_code_1 = serializers.RelatedField(many=False)
     course_code_2 = serializers.RelatedField(many=False)
+    meet_config = serializers.RelatedField(many=False)
 
     class Meta(object):
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'elevation', 'meet_type_1', 'meet_type_2',
-                  'course_code_1', 'course_code_2', 'events', 'team')
+                  'course_code_1', 'course_code_2', 'meet_config', 'events',
+                  'team')
 
 
 class ShortMeetSerializer(serializers.ModelSerializer):
     '''Serializer for basic meet info'''
+    meet_config = serializers.RelatedField(many=False)
+
     class Meta(object):
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
-                  'age_up_date', 'elevation')
+                  'meet_config', 'age_up_date', 'elevation')
 
 
 class TeamSerializer(serializers.ModelSerializer):
