@@ -92,9 +92,9 @@ class TeamsByUserList(generics.ListAPIView):
     serializer_class = TeamSerializer
 
     def get_queryset(self):
-        '''Returns a list of teams for the given user'''
-        username = self.kwargs['username']
-        return Team.objects.filter(users__username=username)
+        '''Returns a list of teams for the given email'''
+        email = self.kwargs['email']
+        return Team.objects.filter(users__email=email)
 
 
 class EventViewSet(viewsets.ModelViewSet):

@@ -15,7 +15,7 @@ urlpatterns = patterns('',
     url(r'^users/(?P<username>[^/]+)/$',
         views.UserDetail.as_view(),
         name='user-detail'),
-    url(r'^teamsbyuser/(?P<username>[^/]+)/$',
+    url(r'^teamsbyuser/(?P<email>[^/]+)/$',
         views.TeamsByUserList.as_view(),
         name='teams-by-user-list'),
 
