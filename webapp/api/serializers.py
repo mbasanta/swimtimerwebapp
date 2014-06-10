@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.heat import Heat
@@ -17,9 +18,9 @@ class VersionSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta(object):
-        model = User
-        fields = ('id', 'username', 'email', 'groups')
-        lookup_field = 'username'
+        model = get_user_model()
+        fields = ('id', 'email', 'first_name', 'last_name', 'groups')
+        lookup_field = 'email'
 
 
 class GroupSerializer(serializers.ModelSerializer):

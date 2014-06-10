@@ -41,7 +41,7 @@ class LatestVersionDetail(generics.RetrieveAPIView):
 class UserList(generics.ListCreateAPIView):
     '''List all user, or create a new user.'''
     User = get_user_model()
-    lookup_field = 'username'
+    lookup_field = 'email'
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -49,7 +49,7 @@ class UserList(generics.ListCreateAPIView):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, update or delete a user instance.'''
     User = get_user_model()
-    lookup_field = 'username'
+    lookup_field = 'email'
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
