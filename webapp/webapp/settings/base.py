@@ -204,7 +204,7 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # )
 
 # Specify a custom user model to use
-#AUTH_USER_MODEL = 'accounts.MyUser'
+AUTH_USER_MODEL = 'base.AppUser'
 
 FILE_UPLOAD_PERMISSIONS = 0o0664
 
