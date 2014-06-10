@@ -1,5 +1,6 @@
 """ Basic models, such as user profile """
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -28,7 +29,7 @@ class AppUserManager(BaseUserManager):
         return user
 
 
-class AppUser(AbstractBaseUser):
+class AppUser(AbstractBaseUser, PermissionsMixin):
     '''Custom user class for email as login'''
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
