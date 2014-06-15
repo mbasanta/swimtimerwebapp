@@ -4,12 +4,11 @@ from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from datetime import date
 
 
 class AppUserManager(BaseUserManager):
     '''Custom user manager to use email as login'''
-    def create_user(self, email, date_of_birth, password=None):
+    def create_user(self, email, password=None):
         '''
         Create and save user with the given email, date of birth,
         and password
@@ -18,22 +17,20 @@ class AppUserManager(BaseUserManager):
             raise ValueError('Users must have an email address')
 
         user = self.model(
-            email=AppUserManager.normalize_email(email),
-            date_of_birth=date_of_birth
+            email=AppUserManager.normalize_email(email)
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, date_of_birth, password):
+    def create_superuser(self, email, password):
         '''
         Create superuser with the given email, date of birth and
         password
         '''
         user = self.create_user(email,
-            password=password,
-            date_of_birth=date_of_birth
+            password=password
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -42,11 +39,9 @@ class AppUserManager(BaseUserManager):
 
 class AppUser(AbstractBaseUser, PermissionsMixin):
     '''Custom user class for email as login'''
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    first_name = models.CharField(_('first name'), max_length=30)
+    last_name = models.CharField(_('last name'), max_length=30)
     email = models.EmailField(_('email address'), max_length=254, unique=True)
-    date_of_birth = models.DateField(_('date of birth'),
-        default=date(1900, 1, 1))
     is_staff = models.BooleanField(_('staff status'), default=False,
         help_text=_('Designates whether the user can log into this admin '
                     'site.'))
@@ -59,7 +54,7 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['date_of_birth']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     objects = AppUserManager()
 
@@ -77,7 +72,3 @@ class AppUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
