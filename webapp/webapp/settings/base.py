@@ -176,7 +176,10 @@ TEMPLATE_LOADERS = (
 
 def custom_show_toolbar(request):
     """ Only show the debug toolbar to users with the superuser flag. """
-    return request.user.is_superuser
+    try:
+        return request.user.is_superuser
+    except:
+        return False
 
 
 DEBUG_TOOLBAR_CONFIG = {
