@@ -96,10 +96,7 @@ class TeamsByUserList(generics.ListAPIView):
 
     def get_queryset(self):
         '''Returns a list of teams for the given email'''
-        try:
-            email = self.kwargs['email']
-        except KeyError:
-            email = self.request.GET.get('email')
+        email = self.kwargs['email']
         return Team.objects.filter(users__email=email)
 
 
