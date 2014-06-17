@@ -176,7 +176,10 @@ TEMPLATE_LOADERS = (
 
 def custom_show_toolbar(request):
     """ Only show the debug toolbar to users with the superuser flag. """
-    return request.user.is_superuser
+    try:
+        return request.user.is_superuser
+    except:
+        return False
 
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -204,7 +207,7 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # )
 
 # Specify a custom user model to use
-#AUTH_USER_MODEL = 'accounts.MyUser'
+AUTH_USER_MODEL = 'base.AppUser'
 
 FILE_UPLOAD_PERMISSIONS = 0o0664
 

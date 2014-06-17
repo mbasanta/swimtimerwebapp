@@ -1,4 +1,5 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.team import Team
@@ -39,14 +40,16 @@ class LatestVersionDetail(generics.RetrieveAPIView):
 
 class UserList(generics.ListCreateAPIView):
     '''List all user, or create a new user.'''
-    lookup_field = 'username'
+    User = get_user_model()
+    lookup_field = 'email'
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, update or delete a user instance.'''
-    lookup_field = 'username'
+    User = get_user_model()
+    lookup_field = 'email'
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -93,7 +96,10 @@ class TeamsByUserList(generics.ListAPIView):
 
     def get_queryset(self):
         '''Returns a list of teams for the given email'''
-        email = self.kwargs['email']
+        try:
+            email = self.kwargs['email']
+        except KeyError:
+            email = self.request.GET.get('email')
         return Team.objects.filter(users__email=email)
 
 

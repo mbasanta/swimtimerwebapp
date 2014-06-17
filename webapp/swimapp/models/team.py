@@ -1,4 +1,5 @@
 '''Classes related to Team'''
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -54,7 +55,7 @@ class Team(models.Model):
     evening_phone = PhoneNumberField(blank=True)
     fax = PhoneNumberField(blank=True)
     email = models.CharField(max_length=36)
-    users = models.ManyToManyField(User,
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                    verbose_name="Users that manage team")
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
