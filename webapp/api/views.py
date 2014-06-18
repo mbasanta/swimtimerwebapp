@@ -12,6 +12,7 @@ from api.serializers import UserSerializer, GroupSerializer
 from api.serializers import MeetSerializer, EventSerializer
 from api.serializers import TeamSerializer
 from api.serializers import VersionSerializer
+from api.renderers import SwimAppJSONRenderer
 
 
 @api_view(('GET',))
@@ -71,12 +72,14 @@ class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
 class MeetList(generics.ListCreateAPIView):
     '''List all meet, or create a new meet.'''
     queryset = Meet.objects.all()
+    renderer_classes = (SwimAppJSONRenderer,)
     serializer_class = MeetSerializer
 
 
 class MeetDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, update or delete a meet instance.'''
     queryset = Meet.objects.all()
+    renderer_classes = (SwimAppJSONRenderer,)
     serializer_class = MeetSerializer
 
 
@@ -93,6 +96,7 @@ class MeetByTeamList(generics.ListAPIView):
 class TeamsByUserList(generics.ListAPIView):
     '''List all teams for a given user'''
     serializer_class = TeamSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
 
     def get_queryset(self):
         '''Returns a list of teams for the given email'''
