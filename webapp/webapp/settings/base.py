@@ -48,6 +48,8 @@ INSTALLED_APPS = (
     'djcelery',
     'debug_toolbar',
     'compressor',
+    'oauth2_provider',
+    'rest_framework',
 
     # Database migrations
     'south',
@@ -57,7 +59,6 @@ INSTALLED_APPS = (
 
     # Local apps, referenced via appname
     'swimapp',
-    'rest_framework',
 )
 
 # Place bcrypt first in the list, so it will be the default password hashing
