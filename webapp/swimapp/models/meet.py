@@ -29,8 +29,8 @@ class Meet(models.Model):
     '''Meet info'''
     meet_name = models.CharField(max_length=45)
     facility = models.CharField(max_length=45)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     age_up_date = models.DateField(blank=True, null=True)
     elevation = models.IntegerField(blank=True, null=True)
     meet_type_1 = models.ForeignKey(MeetType,
