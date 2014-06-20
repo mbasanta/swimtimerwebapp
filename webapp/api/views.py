@@ -5,9 +5,11 @@ from swimapp.models.event import Event
 from swimapp.models.team import Team
 from swimapp.models.version import Version
 from rest_framework import viewsets, generics
+from rest_framework import permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from oauth2_provider.ext.rest_framework import TokenHasScope
 from api.serializers import UserSerializer, GroupSerializer
 from api.serializers import MeetSerializer, EventSerializer
 from api.serializers import TeamSerializer
@@ -74,6 +76,8 @@ class MeetList(generics.ListCreateAPIView):
     queryset = Meet.objects.all()
     renderer_classes = (SwimAppJSONRenderer,)
     serializer_class = MeetSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasScope]
+    required_scopes = ['groups', 'write']
 
 
 class MeetDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -81,6 +85,8 @@ class MeetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Meet.objects.all()
     renderer_classes = (SwimAppJSONRenderer,)
     serializer_class = MeetSerializer
+    permission_classes = [permissions.IsAuthenticated, TokenHasScope]
+    required_scopes = ['groups', 'write']
 
 
 class MeetByTeamList(generics.ListAPIView):
