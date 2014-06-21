@@ -1,5 +1,6 @@
 from rest_framework import pagination, serializers
 from rest_framework.renderers import JSONRenderer
+from swimapp.models import Version
 
 
 class SwimAppJSONRenderer(JSONRenderer):
@@ -18,9 +19,15 @@ class SwimAppJSONRenderer(JSONRenderer):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         response_data = {}
 
+        # Create a version dictionary to attach to response
+        version = {}
+        versionInfo = Version.objects.latest_version()
+        version['version_number'] = versionInfo.version
+        version['version_date'] = versionInfo.datetime
+
         resource = getattr(renderer_context.get('view').get_serializer().Meta,
                            'resource_name',
-                           'objects')
+                           'data')
 
         #check if the results have been paginated
         #if data.get('paginated_results'):
@@ -29,6 +36,7 @@ class SwimAppJSONRenderer(JSONRenderer):
             #response_data[resource] = data.get('paginated_results')
         #else:
         response_data[resource] = data
+        response_data['version'] = version
 
         #call super to render the response
         response = super(SwimAppJSONRenderer, self).render(response_data,
