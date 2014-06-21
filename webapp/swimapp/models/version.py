@@ -2,12 +2,25 @@
 from django.db import models
 
 
+class VersionManager(models.Manager):  # pylint: disable=R0904
+    '''Static classes for version'''
+
+    class Meta(object):  # pylint: disable=C1001, W0232, R0903
+        '''Meta info for Django model'''
+        app_label = 'swimapp'
+
+    def latest_version(self):
+        '''Return lastest version'''
+        return super(VersionManager, self).get_queryset().last()
+
+
 class Version(models.Model):
     '''Application Version'''
     version = models.IntegerField()
     datetime = models.DateTimeField()
+    objects = VersionManager()
 
-    class Meta:  # pylint: disable=C1001, W0232, R0903
+    class Meta(object):  # pylint: disable=C1001, W0232, R0903
         '''Meta info for Django model'''
         app_label = 'swimapp'
 
