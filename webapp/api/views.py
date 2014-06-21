@@ -30,6 +30,8 @@ def api_root(request, format=None):
 class LatestVersionDetail(generics.RetrieveAPIView):
     '''Retrieves the latest application version.'''
     serializer_class = VersionSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
     def get_queryset(self):
         '''Returns the versions'''
@@ -47,6 +49,8 @@ class UserList(generics.ListCreateAPIView):
     lookup_field = 'email'
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -55,6 +59,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'email'
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
 
 class GroupList(generics.ListCreateAPIView):
@@ -62,6 +68,8 @@ class GroupList(generics.ListCreateAPIView):
     lookup_field = 'name'
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
 
 class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -69,6 +77,8 @@ class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'name'
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
 
 class MeetList(generics.ListCreateAPIView):
@@ -76,8 +86,8 @@ class MeetList(generics.ListCreateAPIView):
     queryset = Meet.objects.all()
     renderer_classes = (SwimAppJSONRenderer,)
     serializer_class = MeetSerializer
-    permission_classes = [permissions.IsAuthenticated, TokenHasScope]
-    required_scopes = ['groups', 'write']
+    permission_classes = [permissions.IsAuthenticated,]# TokenHasScope]
+    #required_scopes = ['groups', 'write']
 
 
 class MeetDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -85,13 +95,15 @@ class MeetDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Meet.objects.all()
     renderer_classes = (SwimAppJSONRenderer,)
     serializer_class = MeetSerializer
-    permission_classes = [permissions.IsAuthenticated, TokenHasScope]
-    required_scopes = ['groups', 'write']
+    permission_classes = [permissions.IsAuthenticated,]# TokenHasScope]
+    #required_scopes = ['groups', 'write']
 
 
 class MeetByTeamList(generics.ListAPIView):
     '''List all meets for a given team'''
     serializer_class = MeetSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
     def get_queryset(self):
         '''Return list fo meets for a given team'''
@@ -103,6 +115,7 @@ class TeamsByUserList(generics.ListAPIView):
     '''List all teams for a given user'''
     serializer_class = TeamSerializer
     renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
     def get_queryset(self):
         '''Returns a list of teams for the given email'''
@@ -116,8 +129,12 @@ class TeamsByUserList(generics.ListAPIView):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
 
 
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
+    renderer_classes = (SwimAppJSONRenderer,)
+    permission_classes = [permissions.IsAuthenticated,]
