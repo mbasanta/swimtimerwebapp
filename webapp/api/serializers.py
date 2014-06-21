@@ -66,7 +66,6 @@ class MeetSerializer(serializers.ModelSerializer):
 
     class Meta(object):
         model = Meet
-        resource_name = 'meet'
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'elevation', 'meet_type_1', 'meet_type_2',
                   'course_code_1', 'course_code_2', 'meet_config', 'events',
@@ -79,7 +78,6 @@ class ShortMeetSerializer(serializers.ModelSerializer):
 
     class Meta(object):
         model = Meet
-        resource_name = 'meets'
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'meet_config', 'age_up_date', 'elevation')
 

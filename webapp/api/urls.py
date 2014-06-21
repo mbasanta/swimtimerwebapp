@@ -2,9 +2,11 @@ from django.conf.urls import patterns, url, include
 from api import views
 
 urlpatterns = patterns('',
-    url(r'^$', 'api.views.api_root'),
+    #url(r'^$', 'api.views.api_root'),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
+    url(r'^o/', include('oauth2_provider.urls',
+                        namespace='oauth2_provider')),
     url(r'^latest-version/$',
         views.LatestVersionDetail.as_view(),
         name='latest-version'),
