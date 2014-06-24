@@ -15,6 +15,8 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'webapp.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+    url(r'^o/', include('oauth2_provider.urls',
+                        namespace='oauth2_provider')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^swimapp/', include('swimapp.urls')),
     url(r'^api/', include('api.urls')),
