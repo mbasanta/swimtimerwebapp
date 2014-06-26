@@ -1,6 +1,8 @@
+import pytz
 from rest_framework import pagination, serializers
 from rest_framework.renderers import JSONRenderer
 from swimapp.models import Version
+from datetime import datetime
 
 
 class SwimAppJSONRenderer(JSONRenderer):
@@ -37,6 +39,10 @@ class SwimAppJSONRenderer(JSONRenderer):
         #else:
         response_data[resource] = data
         response_data['version'] = version
+
+        local_tz = pytz.timezone('America/New_York')
+
+        response_data['timestamp'] = datetime.now(local_tz)
 
         #call super to render the response
         response = super(SwimAppJSONRenderer, self).render(response_data,
