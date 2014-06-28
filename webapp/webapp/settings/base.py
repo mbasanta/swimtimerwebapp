@@ -185,10 +185,10 @@ def custom_show_toolbar(request):
 
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
+    # 'INTERCEPT_REDIRECTS': False,  # Deprecated
     'SHOW_TOOLBAR_CALLBACK': 'webapp.settings.base.custom_show_toolbar',
-    'HIDE_DJANGO_SQL': True,
-    'TAG': 'body',
+    # 'HIDE_DJANGO_SQL': True,  # Deprecated
+    'INSERT_BEFORE': 'body',
     'SHOW_TEMPLATE_CONTEXT': True,
     'ENABLE_STACKTRACES': True,
 }
