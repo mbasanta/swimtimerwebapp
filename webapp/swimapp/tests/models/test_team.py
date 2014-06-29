@@ -1,12 +1,12 @@
-'''tests for api teambyuser'''
+'''tests for team class'''
 # pylint: disable=E1101
 from django.test import TestCase
 from base.models import AppUser
 from swimapp.models.team import Team, TeamType, TeamRegistration
 
 
-class TeamsByUserTest(TestCase):  # pylint: disable=R0904
-    '''Test teamsbyuser api call'''
+class TeamsTest(TestCase):  # pylint: disable=R0904
+    '''Test for team class'''
 
     def setUp(self):
         '''Setup tests'''
@@ -32,9 +32,10 @@ class TeamsByUserTest(TestCase):  # pylint: disable=R0904
             daytime_phone='123-456-7890',
             evening_phone='987-123-4567',
             fax='567-1234-0987',
-            email='none@example.com',
+            email='test@example.com',
         )
-        team.users_set = [user]
+        team.save()
+        team.users = [user]
         team.save()
 
     def test_objects_are_saved(self):
@@ -48,3 +49,17 @@ class TeamsByUserTest(TestCase):  # pylint: disable=R0904
         '''Ensure unicode method returns string of team_short_name'''
         team = Team.objects.first()
         self.assertEqual(str(team), team.team_short_name)
+
+    def test_foreignkeys(self):
+        '''Ensure foreign keys are working correctly'''
+        team = Team.objects.first()
+        self.assertEqual(str(team.team_type), 'Two')
+        self.assertEqual(str(team.team_reg), 'One')
+        self.assertEqual(team.users.all().count(), 1)
+        self.assertEqual(team.users.first().email, 'test@example.com')
+
+    def test_teams_for_user(self):
+        '''test teams_for_user method'''
+        teams = Team.objects.teams_for_user('test@example.com')
+        self.assertEqual(teams.count(), 1)
+        self.assertEqual(teams[0].team_name, 'team_name')
