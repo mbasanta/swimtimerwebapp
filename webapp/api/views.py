@@ -1,5 +1,6 @@
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_list_or_404
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.team import Team
@@ -123,7 +124,7 @@ class TeamsByUserList(generics.ListAPIView):
             email = self.kwargs['email']
         except KeyError:
             email = self.request.GET.get('email')
-        return Team.objects.filter(users__email=email)
+        return get_list_or_404(Team, users__email=email)
 
 
 class EventViewSet(viewsets.ModelViewSet):

@@ -34,7 +34,6 @@ class TeamsTest(TestCase):  # pylint: disable=R0904
             fax='567-1234-0987',
             email='test@example.com',
         )
-        team.save()
         team.users = [user]
         team.save()
 
