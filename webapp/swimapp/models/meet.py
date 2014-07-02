@@ -1,7 +1,9 @@
 '''Classes related to Meet'''
+import re
 from django.db import models
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.core.validators import RegexValidator
 from django.contrib import admin
 from localflavor.us.models import USStateField
 from .meet_type import MeetType
@@ -27,7 +29,10 @@ class MeetManager(models.Manager):  # pylint: disable=R0904
 
 class Meet(models.Model):
     '''Meet info'''
-    meet_name = models.CharField(max_length=45)
+    name_regex = re.compile(r'^[A-Za-z0-9\-\_]$')
+    name_validator = RegexValidator(regex=name_regex)
+    meet_name = models.CharField(max_length=45,
+                                 validators=[name_validator])
     facility = models.CharField(max_length=45)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
