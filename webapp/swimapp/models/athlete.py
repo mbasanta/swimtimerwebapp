@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.db import models
 from .athlete_entry import AthleteEntryInline
+from .team import Team
 
 
 class AthleteManager(models.Manager):  # pylint: disable=R0904
@@ -20,6 +21,7 @@ class Athlete(models.Model):
     date_of_birth = models.DateField()
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
+    teams = models.ManyToManyField(Team)
 
     objects = AthleteManager()  # pylint: disable=E1120
 
