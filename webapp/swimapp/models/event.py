@@ -16,7 +16,12 @@ class EventManager(models.Manager):  # pylint: disable=R0904
 
 class Event(models.Model):
     '''Event info'''
-    DISTANCE_UNIT_CHOICES = ('Y', 'M')
+    YARDS = 'Y'
+    METERS = 'M'
+    DISTANCE_UNIT_CHOICES = (
+        (YARDS, 'Yards'),
+        (METERS, 'Meters'),
+    )
 
     event_name = models.CharField(max_length=30)
     event_number = models.IntegerField()
