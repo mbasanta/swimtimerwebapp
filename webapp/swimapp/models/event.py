@@ -16,14 +16,28 @@ class EventManager(models.Manager):  # pylint: disable=R0904
 
 class Event(models.Model):
     '''Event info'''
+    YARDS = 'Y'
+    METERS = 'M'
+    DISTANCE_UNIT_CHOICES = (
+        (YARDS, 'Yards'),
+        (METERS, 'Meters'),
+    )
+
     event_name = models.CharField(max_length=30)
     event_number = models.IntegerField()
     lower_age = models.IntegerField()
     upper_age = models.IntegerField()
     stroke = models.ForeignKey(Stroke)
     distance = models.IntegerField()
+    distance_units = models.CharField(max_length=1,
+                                      choices=DISTANCE_UNIT_CHOICES)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def distance_text(self):
+        '''combine distance and distanct_units to string'''
+        return str(self.distance) + self.distance_units
 
     objects = EventManager()  # pylint: disable=E1120
 
