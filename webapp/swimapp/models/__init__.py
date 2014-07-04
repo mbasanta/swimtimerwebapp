@@ -8,7 +8,9 @@ from meet_type import MeetType
 from event import Event, EventAdmin
 from stroke import Stroke
 from heat import Heat
-from lane_assignment import LaneAssignment
 from meet_event import MeetEvent
 from meet_config import MeetConfig
 from version import Version, VersionManager
+from athlete import Athlete, AthleteAdmin, AthleteManager
+from athlete_entry import AthleteEntry, AthleteEntryInline, AthleteEntryManager
+from entry import Entry, EntryAdmin, EntryManager

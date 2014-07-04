@@ -4,7 +4,7 @@ from swimapp.models.meet import Meet
 from swimapp.models.event import Event
 from swimapp.models.heat import Heat
 from swimapp.models.team import Team
-from swimapp.models.lane_assignment import LaneAssignment
+from swimapp.models.entry import Entry
 from swimapp.models.version import Version
 from rest_framework import serializers
 
@@ -30,19 +30,19 @@ class GroupSerializer(serializers.ModelSerializer):
         lookup_field = 'name'
 
 
-class LaneAssignmentSerializer(serializers.ModelSerializer):
+class EntrySerializer(serializers.ModelSerializer):
 
     class Meta(object):
-        model = LaneAssignment
-        fields = ('lane_number', 'swimmer_name', 'uss_num')
+        model = Entry
+        fields = ('lane_number',)
 
 
 class HeatSerializer(serializers.ModelSerializer):
-    lane_assignments = LaneAssignmentSerializer(many=True)
+    events = EntrySerializer(many=True)
 
     class Meta(object):
         model = Heat
-        fields = ('heat_number', 'lane_assignments')
+        fields = ('heat_number',)
 
 
 class EventSerializer(serializers.ModelSerializer):
