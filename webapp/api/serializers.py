@@ -6,6 +6,8 @@ from swimapp.models.heat import Heat
 from swimapp.models.team import Team
 from swimapp.models.entry import Entry
 from swimapp.models.version import Version
+from swimapp.models.athlete import Athlete
+from swimapp.models.athlete_entry import AthleteEntry
 from rest_framework import serializers
 
 
@@ -30,19 +32,32 @@ class GroupSerializer(serializers.ModelSerializer):
         lookup_field = 'name'
 
 
+class AthleteSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = Athlete
+        fields = ('id', 'first_name', 'last_name', 'date_of_birth',)
+
+
+class AthleteEntrySerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = AthleteEntry
+        fields = ('athlete', 'order',)
+
+
 class EntrySerializer(serializers.ModelSerializer):
+    athleteentry_set = AthleteEntrySerializer(many=True)
 
     class Meta(object):
         model = Entry
-        fields = ('lane_number',)
+        fields = ('lane_number', 'seed_time', 'athleteentry_set',)
 
 
 class HeatSerializer(serializers.ModelSerializer):
-    events = EntrySerializer(many=True)
+    entries = EntrySerializer(many=True)
 
     class Meta(object):
         model = Heat
-        fields = ('heat_number',)
+        fields = ('heat_number', 'entries')
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -63,13 +78,16 @@ class MeetSerializer(serializers.ModelSerializer):
     course_code_1 = serializers.RelatedField(many=False)
     course_code_2 = serializers.RelatedField(many=False)
     meet_config = serializers.RelatedField(many=False)
+    athletes_for_meet = AthleteSerializer(many=True)
 
     class Meta(object):
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'elevation', 'meet_type_1', 'meet_type_2',
-                  'course_code_1', 'course_code_2', 'meet_config', 'events',
-                  'team')
+                  'course_code_1', 'course_code_2', 'meet_config',
+                  'addr_name', 'addr', 'addr_city', 'addr_state', 'addr_zip',
+                  'latitude', 'longitude', 'events', 'team',
+                  'athletes_for_meet')
 
 
 class ShortMeetSerializer(serializers.ModelSerializer):
