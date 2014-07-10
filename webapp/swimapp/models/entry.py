@@ -18,7 +18,8 @@ class Entry(models.Model):
     lane_number = models.IntegerField()
     result_time = models.FloatField()
     seed_time = models.FloatField()
-    heat = models.ForeignKey(Heat, related_name='entry')
+    heat = models.ForeignKey(Heat, related_name='entries')
+    athletes = models.ManyToManyField('Athlete', through='AthleteEntry')
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 

@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.contrib import admin
 from localflavor.us.models import USStateField
+from .athlete import Athlete
 from .meet_type import MeetType
 from .meet_config import MeetConfig
 from .course_code import CourseCode
@@ -78,6 +79,13 @@ class Meet(models.Model):
         '''Get reverse url for meets'''
         # pylint: disable=E1101
         return reverse('swimapp_view_meet', args=[self.id])
+
+    @property
+    def athletes_for_meet(self):
+        '''Return distict list of athletes that are related to this meet'''
+        # pylint: disable=E1101
+        return Athlete.objects.filter(
+            entry__heat__event__meet=self.id).distinct()
 
 
 class MeetAdmin(admin.ModelAdmin):  # pylint: disable=R0904
