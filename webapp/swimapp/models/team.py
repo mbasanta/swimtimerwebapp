@@ -2,8 +2,6 @@
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from localflavor.us.models import USStateField, PhoneNumberField
 from .team_registration import TeamRegistration
 from .team_type import TeamType
@@ -20,9 +18,11 @@ class TeamManager(models.Manager):  # pylint: disable=R0904
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
 
-    def teams_for_user(self, user):  # pylint: disable=E1002
+    def teams_for_user(self, email):  # pylint: disable=E1002
         '''Return a queryset fo teams that below to a user'''
-        return super(TeamManager, self).get_queryset().filter(Q(users=user.id))
+        return super(TeamManager, self).get_queryset().filter(
+            Q(email=email)
+        )
 
 
 class Team(models.Model):
@@ -60,7 +60,7 @@ class Team(models.Model):
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
-    objects = TeamManager()
+    objects = TeamManager()  # pylint: disable=E1120
 
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
@@ -68,6 +68,3 @@ class Team(models.Model):
 
     def __unicode__(self):
         return self.team_short_name
-
-    def get_absolute_url(self):
-        return reverse('swimapp_view_team', args=[self.id])

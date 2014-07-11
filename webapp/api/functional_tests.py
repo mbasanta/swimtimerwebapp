@@ -3,19 +3,24 @@
 import pytz
 from datetime import datetime
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APIClient
 from base.models import AppUser
+from selenium import webdriver
 from swimapp.models.team import Team, TeamType, TeamRegistration
 from swimapp.models.version import Version
 from oauth2_provider.models import AccessToken, Application
+import unittest
 
 
-class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
+class TeamsByUserTest(unittest.TestCase):  # pylint: disable=R0904
     '''Test teamsbyuser api call'''
 
     def setUp(self):
         '''Setup tests'''
         self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer test_token')
+        self.browser = webdriver.Firefox()
+        self.browser.implicitly_wait(3)
 
         user = AppUser.objects.create(email='test@example.com')
         reg = TeamRegistration.objects.create(type_abbr='1', type_name='One')
@@ -64,35 +69,21 @@ class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
             datetime=datetime.now(pytz.timezone('America/New_York'))
         )
 
-    def test_api_without_parameter(self):
-        '''test the api if an email isn't provided'''
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer test_token')
+    def tearDown(self):
+        self.browser.quit()
 
-        response = self.client.get('/api/teamsbyuser/')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        response = self.client.get('/api/teamsbyuser/none@none.com/')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        response = self.client.get('/api/teamsbyuser/user/?email=none@na.com')
-        #self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_api_authorized(self):
+    def test_api_valid_response(self):
         '''test api response data'''
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer test_token')
-
+        #user = AppUser.objects.get(email='test@example.com')
         response = self.client.get('/api/teamsbyuser/test@example.com/')
-        #self.assertEqual(response.status_code, status.HTTP_200_OK)
-        response = self.client.get(
-            '/api/teamsbyuser/user/?email=test@example.com')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        response = self.client.get('/api/teamsbyuser/user/?test@example.com/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_api_not_authorized(self):
         '''test api if not authorized'''
-        self.client.credentials()
-
+        self.client = APIClient()
         response = self.client.get('/api/teamsbyuser/test@example.com/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         response = self.client.get('/api/teamsbyuser/user/?test@example.com/')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_api_response_data(self):
-        pass

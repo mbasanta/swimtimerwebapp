@@ -59,6 +59,7 @@ INSTALLED_APPS = (
 
     # Local apps, referenced via appname
     'swimapp',
+    'hy3parser',
 )
 
 # Place bcrypt first in the list, so it will be the default password hashing
@@ -184,10 +185,10 @@ def custom_show_toolbar(request):
 
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
+    # 'INTERCEPT_REDIRECTS': False,  # Deprecated
     'SHOW_TOOLBAR_CALLBACK': 'webapp.settings.base.custom_show_toolbar',
-    'HIDE_DJANGO_SQL': True,
-    'TAG': 'body',
+    # 'HIDE_DJANGO_SQL': True,  # Deprecated
+    'INSERT_BEFORE': 'body',
     'SHOW_TEMPLATE_CONTEXT': True,
     'ENABLE_STACKTRACES': True,
 }
@@ -324,3 +325,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     )
 }
+
+SOUTH_TESTS_MIGRATE = False  # To disable migrations and use syncdb instead
+SKIP_SOUTH_TESTS = True  # To disable South's own unit tests
