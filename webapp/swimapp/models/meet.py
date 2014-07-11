@@ -5,7 +5,6 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.contrib import admin
-from localflavor.us.models import USStateField
 from .athlete import Athlete
 from .meet_type import MeetType
 from .meet_config import MeetConfig
@@ -14,6 +13,7 @@ from .event import Event
 from .meet_event import MeetEvent
 from .meet_event import MeetEventInline
 from .team import Team
+from .facility import Facility
 
 
 class MeetManager(models.Manager):  # pylint: disable=R0904
@@ -30,15 +30,14 @@ class MeetManager(models.Manager):  # pylint: disable=R0904
 
 class Meet(models.Model):
     '''Meet info'''
-    name_regex = re.compile(r'^[A-Za-z0-9\-\_]$')
+    name_regex = re.compile(r'^[A-Za-z0-9\-\_]+$')
     name_validator = RegexValidator(regex=name_regex)
     meet_name = models.CharField(max_length=45,
                                  validators=[name_validator])
-    facility = models.CharField(max_length=45)
+    facility = models.ForeignKey(Facility)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     age_up_date = models.DateField(blank=True, null=True)
-    elevation = models.IntegerField(blank=True, null=True)
     meet_type_1 = models.ForeignKey(MeetType,
                                     related_name='meet_type_1_set')
     meet_type_2 = models.ForeignKey(MeetType,
@@ -52,14 +51,6 @@ class Meet(models.Model):
                                       blank=True,
                                       null=True)
     meet_config = models.ForeignKey(MeetConfig)
-    addr_name = models.CharField(max_length=30, blank=True, null=True)
-    addr = models.CharField(max_length=30, blank=True, null=True)
-    addr_city = models.CharField(max_length=30, blank=True, null=True)
-    addr_state = USStateField(blank=True, null=True)
-    addr_zip = models.CharField(max_length=10, blank=True, null=True)
-    addr_country = models.CharField(max_length=3, blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
     team = models.ForeignKey(Team)
     events = models.ManyToManyField(Event, through=MeetEvent)
     time_entered = models.DateTimeField(auto_now_add=True)
@@ -70,6 +61,7 @@ class Meet(models.Model):
     class Meta:  # pylint: disable=W0232,C1001,R0903
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
+        unique_together = ('meet_name', 'start_date',)
 
     def __unicode__(self):
     #Define the __unicode__ method, which is used by related models by default.
