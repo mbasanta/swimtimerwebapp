@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.db import models
 from .athlete_entry import AthleteEntryInline
 from .heat import Heat
+from .event import Event
 
 
 class EntryManager(models.Manager):  # pylint: disable=R0904
@@ -18,7 +19,9 @@ class Entry(models.Model):
     lane_number = models.IntegerField()
     result_time = models.FloatField()
     seed_time = models.FloatField()
-    heat = models.ForeignKey(Heat, related_name='entry')
+    heat = models.ForeignKey(Heat)
+    event = models.ForeignKey(Event)
+    athletes = models.ManyToManyField('Athlete', through='AthleteEntry')
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
@@ -28,6 +31,7 @@ class Entry(models.Model):
         app_label = 'swimapp'
 
     def __unicode__(self):
+        # pylint: disable=E1101
         return (self.heat.event.event_name + ", Heat " +
                 str(self.heat.heat_number) + ", Lane " +
                 str(self.lane_number))

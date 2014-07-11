@@ -14,3 +14,4 @@ from version import Version, VersionManager
 from athlete import Athlete, AthleteAdmin, AthleteManager
 from athlete_entry import AthleteEntry, AthleteEntryInline, AthleteEntryManager
 from entry import Entry, EntryAdmin, EntryManager
+from facility import Facility, FacilityManager
