@@ -10,6 +10,7 @@ from .models import Version
 from .models import Athlete, AthleteAdmin
 from .models import Entry, EntryAdmin
 from .models import AthleteEntry
+from .models import Facility
 
 
 admin.site.register(Team)
@@ -27,3 +28,4 @@ admin.site.register(Version)
 admin.site.register(Athlete, AthleteAdmin)
 admin.site.register(Entry, EntryAdmin)
 admin.site.register(AthleteEntry)
+admin.site.register(Facility)
