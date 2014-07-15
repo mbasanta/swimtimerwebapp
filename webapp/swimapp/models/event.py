@@ -34,6 +34,7 @@ class Event(models.Model):
     distance = models.IntegerField()
     distance_units = models.CharField(max_length=1,
                                       choices=DISTANCE_UNIT_CHOICES)
+    is_relay = models.BooleanField(default=False)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 

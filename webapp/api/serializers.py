@@ -87,7 +87,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ('id', 'event_name', 'event_number', 'lower_age', 'upper_age',
                   'gender', 'stroke', 'distance', 'distance_units',
-                  'entry_set')
+                  'is_relay', 'entry_set')
 
 
 class FacilitySerializer(serializers.ModelSerializer):
