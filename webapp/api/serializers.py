@@ -86,7 +86,8 @@ class EventSerializer(serializers.ModelSerializer):
         '''Django meta for EventSerializer'''
         model = Event
         fields = ('id', 'event_name', 'event_number', 'lower_age', 'upper_age',
-                  'stroke', 'distance', 'distance_units', 'entry_set')
+                  'gender', 'stroke', 'distance', 'distance_units',
+                  'is_relay', 'entry_set')
 
 
 class FacilitySerializer(serializers.ModelSerializer):
