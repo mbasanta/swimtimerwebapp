@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import admin
 from .stroke import Stroke
 from .meet_event import MeetEventInline
+from .choices_constants import GENDER_CHOICES
 
 
 class EventManager(models.Manager):  # pylint: disable=R0904
@@ -27,6 +28,8 @@ class Event(models.Model):
     event_number = models.IntegerField()
     lower_age = models.IntegerField()
     upper_age = models.IntegerField()
+    gender = models.CharField(max_length=1,
+                              choices=GENDER_CHOICES)
     stroke = models.ForeignKey(Stroke)
     distance = models.IntegerField()
     distance_units = models.CharField(max_length=1,
