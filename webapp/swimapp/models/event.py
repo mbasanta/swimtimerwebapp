@@ -24,7 +24,7 @@ class Event(models.Model):
         (METERS, 'Meters'),
     )
 
-    event_name = models.CharField(max_length=30)
+    event_name = models.CharField(max_length=100)
     event_number = models.IntegerField()
     lower_age = models.IntegerField()
     upper_age = models.IntegerField()
