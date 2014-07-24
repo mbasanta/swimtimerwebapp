@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.db import models
 from .athlete_entry import AthleteEntryInline
 from .team import Team
+from .choices_constants import GENDER_CHOICES
 
 
 class AthleteManager(models.Manager):  # pylint: disable=R0904
@@ -19,6 +20,8 @@ class Athlete(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     date_of_birth = models.DateField()
+    gender = models.CharField(max_length=1,
+                              choices=GENDER_CHOICES)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
     teams = models.ManyToManyField(Team)
