@@ -9,7 +9,8 @@ class LINE_TYPE_CONSTANTS(object):
         "08": "",
         "AG": "",
         "US": "",
-        "SR": ""
+        "SR": "",
+        "YM": ""
         }
 
     COURSE_CODE = {
@@ -21,6 +22,9 @@ class LINE_TYPE_CONSTANTS(object):
     LINE_TYPE = {
         "MEET_INFO": "B1",
         "MEET_INFO_CONT": "B2",
+        "TEAM_INFO_1": "C1",
+        "TEAM_INFO_2": "C2",
+        "TEAM_INFO_3": "C3",
         "SWIMMER_INFO_1": "D1",
         "SWIMMER_INFO_2": "D2",
         "SWIMMER_INFO_3": "D3",
