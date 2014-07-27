@@ -38,12 +38,9 @@ class Meet(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     age_up_date = models.DateField(blank=True, null=True)
-    meet_type_1 = models.ForeignKey(MeetType,
-                                    related_name='meet_type_1_set')
-    meet_type_2 = models.ForeignKey(MeetType,
-                                    related_name='meet_type_2_set',
-                                    blank=True,
-                                    null=True)
+    meet_masters = models.BooleanField(default=False)
+    meet_type = models.ForeignKey(MeetType,
+                                  related_name='meet_type_set')
     course_code_1 = models.ForeignKey(CourseCode,
                                       related_name='course_code_1_set')
     course_code_2 = models.ForeignKey(CourseCode,
