@@ -35,20 +35,22 @@ class Meet(models.Model):
     meet_name = models.CharField(max_length=45,
                                  validators=[name_validator])
     facility = models.ForeignKey(Facility)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True)
+    end_date = models.DateTimeField(null=True)
     age_up_date = models.DateField(blank=True, null=True)
     meet_masters = models.BooleanField(default=False)
     meet_type = models.ForeignKey(MeetType,
-                                  related_name='meet_type_set')
+                                  related_name='meet_type_set',
+                                  null=True)
     course_code_1 = models.ForeignKey(CourseCode,
-                                      related_name='course_code_1_set')
+                                      related_name='course_code_1_set',
+                                      null=True)
     course_code_2 = models.ForeignKey(CourseCode,
                                       related_name='course_code_2_set',
                                       blank=True,
                                       null=True)
-    meet_config = models.ForeignKey(MeetConfig)
-    team = models.ForeignKey(Team)
+    meet_config = models.ForeignKey(MeetConfig, null=True)
+    team = models.ForeignKey(Team, null=True)
     events = models.ManyToManyField(Event, through=MeetEvent)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
