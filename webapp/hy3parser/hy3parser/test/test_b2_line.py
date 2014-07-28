@@ -82,7 +82,10 @@ class B2MeetMasters(unittest.TestCase):
 
 class B2MeetType(unittest.TestCase):
     """Test parsing meet type from string"""
-    known_values = (("08", "08"),
+    known_values = (("HS", "HS"),
+                    ("hs", "HS"),
+                    ("SL", "SL"),
+                    ("sl", "SL"),
                     ("AG", "AG"),
                     ("ag", "AG"),
                     ("US", "US"),

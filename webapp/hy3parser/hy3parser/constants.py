@@ -6,7 +6,8 @@ class LINE_TYPE_CONSTANTS(object):
     """Constants used for line type objects"""
 
     MEET_TYPE = {
-        "08": "",
+        "HS": "",
+        "SL": "",
         "AG": "",
         "US": "",
         "SR": "",
