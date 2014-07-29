@@ -14,6 +14,7 @@ CL2FileLength = 156
 CL2Scale = 19
 CL2Offset = 211
 
+
 class CheckSumExportException(Exception):
     """Exception to throw when there's an error in the creation of checksum"""
     def __init__(self, field):
@@ -23,6 +24,20 @@ class CheckSumExportException(Exception):
 
     def __str__(self):
         return repr(self.message)
+
+
+class MultipleLinesFoundException(Exception):
+    """
+    Exception to throw when parsing a file and more lines then expected
+    are found
+    """
+    def __init__(self):
+        Exception.__init__(self)
+        self.message = "Multiple lines found, only one line expected"
+
+    def __str__(self):
+        return repr(self.message)
+
 
 def appendCheckSum(inputStr, fileFormat=None):
     """appendCheckSum is used for exporting Team Manager/Meet Manager compliant
