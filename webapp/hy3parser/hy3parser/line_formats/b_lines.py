@@ -168,8 +168,8 @@ class B2Line(object):
     # pylint: disable-msg=R0902
     def __init__(self, hy3_line=None):
         """Default constructor for empty instance"""
-        self.__meet_type_1 = None
-        self.__meet_type_2 = None
+        self.__meet_masters = None
+        self.__meet_type = None
         self.__course_code_1 = None
         self.__course_code_2 = None
 
@@ -179,40 +179,40 @@ class B2Line(object):
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
         if (len(hy3_line) == 130 and hy3_line[0:2] == "B2"):
-            self._parse_meet_type_1(hy3_line[94:96])
-            self._parse_meet_type_2(hy3_line[96:98])
+            self._parse_meet_masters(hy3_line[94:96])
+            self._parse_meet_type(hy3_line[96:98])
             self._parse_course_code_1(hy3_line[98])
             self._parse_course_code_2(hy3_line[106])
         else:
             raise line_format_errors.InputLineError()
 
-    def _parse_meet_type_1(self, raw_meet_type_1):
+    def _parse_meet_masters(self, raw_meet_masters):
         """Parse meet type 1 from 2 character string"""
         try:
-            raw_meet_type_1 = raw_meet_type_1.strip().upper()
+            raw_meet_masters = raw_meet_masters.strip().upper()
 
-            if (len(raw_meet_type_1) == 0):
-                self.__meet_type_1 = None
-            elif (re.match("06", raw_meet_type_1)):
-                self.__meet_type_1 = raw_meet_type_1
+            if (len(raw_meet_masters) == 0):
+                self.__meet_masters = False
+            elif (re.match("06", raw_meet_masters)):
+                self.__meet_masters = True
             else:
-                raise line_format_errors.FieldParseError("meet_type_1")
+                raise line_format_errors.FieldParseError("meet_masters")
         except Exception:
-            raise line_format_errors.FieldParseError("meet_type_1")
+            raise line_format_errors.FieldParseError("meet_masters")
 
-    def _parse_meet_type_2(self, raw_meet_type_2):
-        """Parse meet type 2 from 2 character string"""
+    def _parse_meet_type(self, raw_meet_type):
+        """Parse meet type from 2 character string"""
         try:
-            raw_meet_type_2 = raw_meet_type_2.strip().upper()
+            raw_meet_type = raw_meet_type.strip().upper()
 
-            if (len(raw_meet_type_2) == 0):
-                self.__meet_type_2 = None
-            elif (raw_meet_type_2 in constants.LINE_TYPE_CONSTANTS.MEET_TYPE):
-                self.__meet_type_2 = raw_meet_type_2
+            if (len(raw_meet_type) == 0):
+                self.__meet_type = None
+            elif (raw_meet_type in constants.LINE_TYPE_CONSTANTS.MEET_TYPE):
+                self.__meet_type = raw_meet_type
             else:
-                raise line_format_errors.FieldParseError("meet_type_2")
+                raise line_format_errors.FieldParseError("meet_type")
         except Exception:
-            raise line_format_errors.FieldParseError("meet_type_2")
+            raise line_format_errors.FieldParseError("meet_type")
 
     def _parse_course_code_1(self, raw_course_code_1):
         """Parse course code 1 from 1 character string"""
@@ -245,24 +245,24 @@ class B2Line(object):
             raise line_format_errors.FieldParseError("course_code_2")
 
     @property
-    def meet_type_1(self):
+    def meet_masters(self):
         """Event meet type 1"""
-        return self.__meet_type_1
+        return self.__meet_masters
 
-    @meet_type_1.setter
-    def meet_type_1(self, meet_type_1):
-        """Event meet type 1"""
-        self.__meet_type_1 = meet_type_1
+    @meet_masters.setter
+    def meet_masters(self, meet_masters):
+        """Event meet masters"""
+        self.__meet_masters = meet_masters
 
     @property
-    def meet_type_2(self):
-        """Event meet type 2"""
-        return self.__meet_type_2
+    def meet_type(self):
+        """Event meet type"""
+        return self.__meet_type
 
-    @meet_type_2.setter
-    def meet_type_2(self, meet_type_2):
+    @meet_type.setter
+    def meet_type(self, meet_type):
         """Event meet type 2"""
-        self.__meet_type_2 = meet_type_2
+        self.__meet_type = meet_type
 
     @property
     def course_code_1(self):

@@ -23,8 +23,8 @@ class B1LineConstructor(unittest.TestCase):
     def test_constructor_without_value(self):
         """Test constructor with no value passed"""
         line = B2Line()
-        self.assertEqual((line.meet_type_1,
-                          line.meet_type_2,
+        self.assertEqual((line.meet_masters,
+                          line.meet_type,
                           line.course_code_1,
                           line.course_code_2),
                          (None, None, None, None))
@@ -32,11 +32,11 @@ class B1LineConstructor(unittest.TestCase):
     def test_constructor_with_value(self):
         """Test constructor with line value"""
         line = B2Line(self.test_line)
-        self.assertEqual((line.meet_type_1,
-                          line.meet_type_2,
+        self.assertEqual((line.meet_masters,
+                          line.meet_type,
                           line.course_code_1,
                           line.course_code_2),
-                         ("06",
+                         (True,
                           "AG",
                           "L",
                           "S"))
@@ -52,9 +52,9 @@ class B1LineConstructor(unittest.TestCase):
                           lambda: B2Line(self.bad_line))
 
 
-class B2MeetType1(unittest.TestCase):
+class B2MeetMasters(unittest.TestCase):
     """Test parsing meet type from string"""
-    known_values = (("06", "06"),)
+    known_values = (("06", True),)
 
     bad_values = ("xx",
                   "18")
@@ -62,33 +62,38 @@ class B2MeetType1(unittest.TestCase):
     def setUp(self):
         self.line = B2Line()
 
-    def test_meet_type_1_bad_value(self):
+    def test_meet_masters_bad_value(self):
         """Raise FieldParseError for invalid meet code"""
         for val in self.bad_values:
             self.assertRaises(line_format_errors.FieldParseError,
-                              lambda: self.line._parse_meet_type_1(val))
+                              lambda: self.line._parse_meet_masters(val))
 
-    def test_meet_type_1_good_values(self):
+    def test_meet_masters_good_values(self):
         """Parse valid meet type codes successfully"""
         for input_val, output_val in self.known_values:
-            self.line._parse_meet_type_1(input_val)
-            self.assertEqual(output_val, self.line.meet_type_1)
+            self.line._parse_meet_masters(input_val)
+            self.assertEqual(output_val, self.line.meet_masters)
 
-    def test_meet_type_1_no_value(self):
+    def test_meet_masters_no_value(self):
         """Set meet type to None if value is empty string"""
-        self.line._parse_meet_type_1("  ")
-        self.assertEqual(self.line.meet_type_1, None)
+        self.line._parse_meet_masters("  ")
+        self.assertEqual(self.line.meet_masters, False)
 
 
-class B2MeetType2(unittest.TestCase):
+class B2MeetType(unittest.TestCase):
     """Test parsing meet type from string"""
-    known_values = (("08", "08"),
+    known_values = (("HS", "HS"),
+                    ("hs", "HS"),
+                    ("SL", "SL"),
+                    ("sl", "SL"),
                     ("AG", "AG"),
                     ("ag", "AG"),
                     ("US", "US"),
                     ("us", "US"),
                     ("SR", "SR"),
-                    ("sr", "SR"))
+                    ("sr", "SR"),
+                    ("YM", "YM"),
+                    ("ym", "YM"))
 
     bad_values = ("xx",
                   "18")
@@ -96,22 +101,22 @@ class B2MeetType2(unittest.TestCase):
     def setUp(self):
         self.line = B2Line()
 
-    def test_meet_type_2_bad_value(self):
+    def test_meet_type_bad_value(self):
         """Raise FieldParseError for invalid meet code"""
         for val in self.bad_values:
             self.assertRaises(line_format_errors.FieldParseError,
-                              lambda: self.line._parse_meet_type_2(val))
+                              lambda: self.line._parse_meet_type(val))
 
-    def test_meet_type_2_good_values(self):
+    def test_meet_type_good_values(self):
         """Parse valid meet tye codes successfully"""
         for input_val, output_val in self.known_values:
-            self.line._parse_meet_type_2(input_val)
-            self.assertEqual(output_val, self.line.meet_type_2)
+            self.line._parse_meet_type(input_val)
+            self.assertEqual(output_val, self.line.meet_type)
 
-    def test_meet_type_2_no_value(self):
+    def test_meet_type_no_value(self):
         """Set meet type to None if value is empty string"""
-        self.line._parse_meet_type_2("  ")
-        self.assertEqual(self.line.meet_type_2, None)
+        self.line._parse_meet_type("  ")
+        self.assertEqual(self.line.meet_type, None)
 
 
 class B2CourseCode1(unittest.TestCase):
