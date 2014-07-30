@@ -39,6 +39,16 @@ class MultipleLinesFoundException(Exception):
         return repr(self.message)
 
 
+def vals_from_dict(dictionary):
+    """
+    Return a dictionary iterator that python v2 or v3 compatible
+    """
+    try:
+        return dictionary.itervalues()
+    except AttributeError:
+        return dictionary.values()
+
+
 def appendCheckSum(inputStr, fileFormat=None):
     """appendCheckSum is used for exporting Team Manager/Meet Manager compliant
     files. 
