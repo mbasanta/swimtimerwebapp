@@ -17,7 +17,8 @@ class Facility(models.Model):
     facility_name = models.CharField(max_length=45)
     elevation = models.IntegerField(blank=True, null=True)
     length_1 = models.ForeignKey(CourseCode,
-                                 related_name='length_1_set')
+                                 related_name='length_1_set',
+                                 null=True)
     length_2 = models.ForeignKey(CourseCode,
                                  related_name='length_2_set',
                                  blank=True,

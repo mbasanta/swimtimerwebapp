@@ -328,3 +328,5 @@ REST_FRAMEWORK = {
 
 SOUTH_TESTS_MIGRATE = False  # To disable migrations and use syncdb instead
 SKIP_SOUTH_TESTS = True  # To disable South's own unit tests
+
+ATOMIC_REQUESTS = True # use transactions
