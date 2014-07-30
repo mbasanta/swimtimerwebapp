@@ -108,8 +108,7 @@ class MeetSerializer(serializers.ModelSerializer):
     '''Serializer for all meet info and dependencies'''
     facility = FacilitySerializer()
     events = EventSerializer(many=True)
-    meet_type_1 = serializers.RelatedField(many=False)
-    meet_type_2 = serializers.RelatedField(many=False)
+    meet_type = serializers.RelatedField(many=False)
     course_code_1 = serializers.RelatedField(many=False)
     course_code_2 = serializers.RelatedField(many=False)
     meet_config = serializers.RelatedField(many=False)
@@ -119,7 +118,7 @@ class MeetSerializer(serializers.ModelSerializer):
         '''Django meta for MeetSerializer'''
         model = Meet
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
-                  'age_up_date', 'meet_type_1', 'meet_type_2',
+                  'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
                   'events', 'team', 'athletes_for_meet')
 
