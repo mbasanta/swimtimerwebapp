@@ -8,6 +8,7 @@ if __name__ == '__main__' and __package__ is None:
 
 from django.db import transaction
 from swimapp.models import Meet, Facility, CourseCode, MeetType
+from swimapp.models import Team, TeamType, TeamRegistration
 from hy3parser.constants import LINE_TYPE_CONSTANTS
 from hy3parser.line_formats.b_lines import B1Line, B2Line
 from hy3parser.line_formats.c_lines import C1Line, C2Line, C3Line
@@ -54,7 +55,7 @@ class Hy3Parser(object):
         return events
 
     @staticmethod
-    def __create_meet_and_facility(meet_info_line, meet_info_cont_line):
+    def __create_meet_and_facility(meet_info_line, meet_info_cont_line, team):
         """
         Given meet info lines (B1 and B2) retrieve and/or create the
         neccesary entries in the database for meet and facility
@@ -128,10 +129,55 @@ class Hy3Parser(object):
             except Exception:
                 pass
 
+            meet.team = team
+
             meet.save()
 
         # return the created meet, if needed facility can come from meet
         return meet
+
+    @staticmethod
+    def __create_team(team_name_line, team_address_line, team_contact_line):
+        """
+        Given the appropriate lines (C1, C2, C3) create and return
+        a team if new or just return the team if it already exists
+        """
+
+        c1_line = C1Line(team_name_line)
+        c2_line = C2Line(team_address_line)
+        c3_line = C3Line(team_contact_line)
+
+        team_type, new_team_type = TeamType.objects.get_or_create(
+            type_abbr=c1_line.team_type,
+            defaults={'type_text': c1_line.team_type}
+            )
+
+        team_reg, new_team_reg = TeamRegistration.objects.get_or_create(
+            type_abbr=c2_line.team_reg,
+            defaults={'type_text': c2_line.team_reg}
+            )
+
+        team, new_team = Team.objects.get_or_create(
+            team_abbr=c1_line.team_abbr,
+            defaults={
+                'team_name': c1_line.team_name,
+                'team_short_name': c1_line.team_short_name,
+                'team_type': team_type,
+                'addr_name': c2_line.addr_name,
+                'addr': c2_line.addr,
+                'addr_city': c2_line.addr_city,
+                'addr_state': c2_line.addr_state,
+                'addr_zip': c2_line.addr_zip,
+                'addr_country': c2_line.addr_country,
+                'team_reg': team_reg,
+                'daytime_phone': c3_line.daytime_phone,
+                'evening_phone': c3_line.evening_phone,
+                'fax': c3_line.fax,
+                'email': c3_line.email
+                }
+            )
+
+        return team
 
     @staticmethod
     def __filter_line_type(lines_list, line_type, multiple=False):
@@ -177,10 +223,30 @@ class Hy3Parser(object):
                 Hy3Parser.__LINE_TYPE['MEET_INFO_CONT']
                 )
 
-        meet = Hy3Parser.__create_meet_and_facility(meet_info[0],
-                                                    meet_info_cont[0])
+            team_name = Hy3Parser.__filter_line_type(
+                event,
+                Hy3Parser.__LINE_TYPE['TEAM_INFO_1']
+                )
 
-        return meet.id
+            team_address = Hy3Parser.__filter_line_type(
+                event,
+                Hy3Parser.__LINE_TYPE['TEAM_INFO_2']
+                )
+
+            team_contact = Hy3Parser.__filter_line_type(
+                event,
+                Hy3Parser.__LINE_TYPE['TEAM_INFO_3']
+                )
+
+        team = Hy3Parser.__create_team(team_name[0],
+                                       team_address[0],
+                                       team_contact[0])
+
+        meet = Hy3Parser.__create_meet_and_facility(meet_info[0],
+                                                    meet_info_cont[0],
+                                                    team)
+
+        return (meet.id, team.id)
 
 
 # TODO: Remove eventually
