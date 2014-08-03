@@ -212,7 +212,7 @@ class Hy3Parser(object):
             if line[0:2] == line_type:
                 if len(found_lines) == 0:
                     found_lines.append(line)
-                elif len(found_lines) > 1 and multiple:
+                elif len(found_lines) > 0 and multiple:
                     found_lines.append(line)
                 else:
                     raise MultipleLinesFoundException
@@ -253,6 +253,13 @@ class Hy3Parser(object):
                 Hy3Parser.__LINE_TYPE['TEAM_INFO_3']
                 )
 
+            # TODO: Update to handle child E1 Lines
+            athletes = Hy3Parser.__filter_line_type(
+                event,
+                Hy3Parser.__LINE_TYPE['SWIMMER_INFO_1'],
+                multiple=True
+                )
+
         team = Hy3Parser.__create_team(team_name[0],
                                        team_address[0],
                                        team_contact[0])
@@ -261,7 +268,13 @@ class Hy3Parser(object):
                                                     meet_info_cont[0],
                                                     team)
 
-        return (meet.id, team.id)
+        athlete_ids = []
+        for line in athletes:
+            athlete_ids.append(
+                (Hy3Parser.__create_athlete(line, team)).id
+                )
+
+        return (meet.id, team.id, athlete_ids)
 
 
 # TODO: Remove eventually
