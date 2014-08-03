@@ -9,6 +9,7 @@ if __name__ == '__main__' and __package__ is None:
 from django.db import transaction
 from swimapp.models import Meet, Facility, CourseCode, MeetType
 from swimapp.models import Team, TeamType, TeamRegistration
+from swimapp.models import Athlete
 from hy3parser.constants import LINE_TYPE_CONSTANTS
 from hy3parser.line_formats.b_lines import B1Line, B2Line
 from hy3parser.line_formats.c_lines import C1Line, C2Line, C3Line
@@ -126,6 +127,29 @@ class Hy3Parser(object):
 
         # return the created meet, if needed facility can come from meet
         return meet
+
+    @staticmethod
+    def __create_athlete(athlete_line, team):
+        """
+        Get or create the athlete and assign to team
+        Return the athlete
+        """
+
+        d1_line = D1Line(athlete_line)
+
+        athlete, new_athlete = Athlete.objects.get_or_create(
+            first_name=d1_line.first_name,
+            last_name=d1_line.last_name,
+            date_of_birth=d1_line.date_of_birth,
+            gender=d1_line.gender
+            )
+
+        if new_athlete:
+            athlete.teams.add(team)
+            athlete.save()
+
+        # hack for vim folding
+        return athlete
 
     @staticmethod
     def __create_team(team_name_line, team_address_line, team_contact_line):
