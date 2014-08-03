@@ -105,29 +105,20 @@ class Hy3Parser(object):
             )
 
         if new_meet:
-            try:
-                course_code_1 = CourseCode.objects.get(
-                    type_abbr=b2_line.course_code_1
-                    )
-                meet.course_code_1 = course_code_1
-            except Exception:
-                pass
+            course_code_1, new_course_code_1 = CourseCode.objects.get_or_create(
+                type_abbr=b2_line.course_code_1,
+                defaults={'type_name': b2_line.course_code_1}
+                )
 
-            try:
-                course_code_2 = CourseCode.objects.get(
-                    type_abbr=b2_line.course_code_2
-                    )
-                meet.course_code_2 = course_code_2
-            except Exception:
-                pass
+            course_code_2, new_course_code_2 = CourseCode.objects.get_or_create(
+                type_abbr=b2_line.course_code_2,
+                defaults={'type_name': b2_line.course_code_2}
+                )
 
-            try:
-                meet_type = MeetType.objects.get(
-                    type_abbr=b2_line.meet_type
-                    )
-                meet.meet_type = meet_type
-            except Exception:
-                pass
+            meet_type, new_meet_type = MeetType.objects.get_or_create(
+                type_abbr=b2_line.meet_type,
+                defaults={'type_name': b2_line.meet_type}
+                )
 
             meet.team = team
 
@@ -149,12 +140,12 @@ class Hy3Parser(object):
 
         team_type, new_team_type = TeamType.objects.get_or_create(
             type_abbr=c1_line.team_type,
-            defaults={'type_text': c1_line.team_type}
+            defaults={'type_name': c1_line.team_type}
             )
 
         team_reg, new_team_reg = TeamRegistration.objects.get_or_create(
             type_abbr=c2_line.team_reg,
-            defaults={'type_text': c2_line.team_reg}
+            defaults={'type_name': c2_line.team_reg}
             )
 
         team, new_team = Team.objects.get_or_create(
@@ -176,7 +167,7 @@ class Hy3Parser(object):
                 'email': c3_line.email
                 }
             )
-
+        # return team
         return team
 
     @staticmethod
