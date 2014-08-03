@@ -51,6 +51,7 @@ class Meet(models.Model):
                                       null=True)
     meet_config = models.ForeignKey(MeetConfig, null=True)
     team = models.ForeignKey(Team, null=True)
+    teams = models.ManyToManyField(Team, related_name='all_meet_set')
     events = models.ManyToManyField(Event, through=MeetEvent)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
