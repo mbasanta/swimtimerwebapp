@@ -7,9 +7,9 @@ if __name__ == '__main__' and __package__ is None:
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
 from django.db import transaction
-from swimapp.models import Meet, Facility, CourseCode, MeetType
-from swimapp.models import Team, TeamType, TeamRegistration
-from swimapp.models import Athlete
+from swimapp.models import (Meet, Facility, CourseCode, MeetType,
+                            Team, TeamType, TeamRegistration,
+                            Athlete, Event, Stroke)
 from hy3parser.constants import LINE_TYPE_CONSTANTS
 from hy3parser.line_formats.b_lines import B1Line, B2Line
 from hy3parser.line_formats.c_lines import C1Line, C2Line, C3Line
@@ -129,6 +129,50 @@ class Hy3Parser(object):
         return meet
 
     @staticmethod
+    def __create_event(event_line, athlete, meet):
+        """
+        Get or create the event for a given athlete and return the event
+        """
+        e1_line = E1Line(event_line)
+
+        stroke, new_stroke = Stroke.objects.get_or_create(
+            type_abbr=e1_line.stroke,
+            defaults={'type_name': e1_line.stroke}
+            )
+
+        event, new_event = Event.objects.get_or_create(
+            event_number=e1_line.event_number,
+            lower_age=e1_line.lower_age,
+            upper_age=e1_line.upper_age,
+            gender=e1_line.gender,
+            stroke=stroke,
+            distance=e1_line.distance,
+            distance_units=meet.distance_units
+            )
+
+        if new_event:
+            event.event_name = event.lower_age + r"/" + \
+                event.upper_age + event.gender + r" " + \
+                event.distance + event.distance_units + " " + \
+                event.stroke.type_name + \
+                (" Relay" if event.is_relay else "")
+
+        event.meets.add(meet)
+        event.save()
+
+        return event
+
+    @staticmethod
+    def __create_entry(event, athlete):
+        """
+        Get or create the entry for a given athlete and event
+        Return the entry
+        """
+        Entry.objects.get_or_create(
+                event = event,
+                athlete
+            )
+    @staticmethod
     def __create_athlete(athlete_line, team):
         """
         Get or create the athlete and assign to team
@@ -212,12 +256,45 @@ class Hy3Parser(object):
             if line[0:2] == line_type:
                 if len(found_lines) == 0:
                     found_lines.append(line)
-                elif len(found_lines) > 1 and multiple:
+                elif len(found_lines) > 0 and multiple:
                     found_lines.append(line)
                 else:
                     raise MultipleLinesFoundException
 
         return found_lines
+
+    @staticmethod
+    def __filter_athlete_lines(lines_list):
+        """
+        Give a list of lines returns a list of athletes and entries in
+        following format
+        [
+            {
+                'athlete': string D1 line
+                'events': list of E1 lines
+            }
+        ]
+        """
+
+        athletes = []
+        athlete = ""
+        events = []
+
+        for line in lines_list:
+            if line[0:2] == Hy3Parser.__LINE_TYPE['SWIMMER_INFO_1']:
+                if len(athlete) == 0:
+                    athlete = line
+                else:
+                    athletes.append({
+                        'athlete': athlete,
+                        'events': events
+                        })
+                    athlete = ""
+                    events = []
+            if line[0:2] == Hy3Parser.__LINE_TYPE['INDIVIDUAL_ENTRY']:
+                events.append(line)
+
+        return athletes
 
     @staticmethod
     @transaction.atomic
@@ -253,6 +330,8 @@ class Hy3Parser(object):
                 Hy3Parser.__LINE_TYPE['TEAM_INFO_3']
                 )
 
+            athletes = Hy3Parser.__filter_athlete_lines(event)
+
         team = Hy3Parser.__create_team(team_name[0],
                                        team_address[0],
                                        team_contact[0])
@@ -261,7 +340,16 @@ class Hy3Parser(object):
                                                     meet_info_cont[0],
                                                     team)
 
-        return (meet.id, team.id)
+        athlete_ids = []
+        for athlete in athletes:
+            athlete_obj = Hy3Parser.__create_athlete(athlete['athlete'], team)
+            athlete_ids.append(athlete_obj.id)
+
+            for event in athlete['events']:
+                event_obj = Hy3Parser.__create_event(event, athlete_obj, meet)
+                entry_obj = Hy3Parser.__create_entry(event_obj, athlete_obj)
+
+        return (meet.id, team.id, athlete_ids)
 
 
 # TODO: Remove eventually
