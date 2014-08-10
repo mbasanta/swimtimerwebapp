@@ -18,7 +18,9 @@ class AthleteEntry(models.Model):
     # http://stackoverflow.com/q/4379042/
     athlete = models.ForeignKey('swimapp.Athlete')
     entry = models.ForeignKey('swimapp.Entry')
-    order = models.IntegerField()
+    order = models.IntegerField(
+        blank=True,
+        null=True)
 
     objects = AthleteEntryManager()  # pylint: disable=E1120
 
