@@ -16,10 +16,19 @@ class EntryManager(models.Manager):  # pylint: disable=R0904
 
 class Entry(models.Model):
     '''Entry info'''
-    lane_number = models.IntegerField()
-    result_time = models.FloatField()
-    seed_time = models.FloatField()
-    heat = models.ForeignKey(Heat)
+    lane_number = models.IntegerField(
+        blank=True,
+        null=True)
+    result_time = models.FloatField(
+        blank=True,
+        null=True)
+    seed_time = models.FloatField(
+        blank=True,
+        null=True)
+    heat = models.ForeignKey(
+        Heat,
+        blank=True,
+        null=True)
     event = models.ForeignKey(Event)
     athletes = models.ManyToManyField('Athlete', through='AthleteEntry')
     time_entered = models.DateTimeField(auto_now_add=True)
