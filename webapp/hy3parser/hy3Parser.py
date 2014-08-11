@@ -6,10 +6,11 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
+from datetime import datetime
 from django.db import transaction
 from swimapp.models import (Meet, Facility, CourseCode, MeetType,
                             Team, TeamType, TeamRegistration,
-                            Athlete, Event, Stroke)
+                            Athlete, Event, Stroke, Entry)
 from hy3parser.constants import LINE_TYPE_CONSTANTS
 from hy3parser.line_formats.b_lines import B1Line, B2Line
 from hy3parser.line_formats.c_lines import C1Line, C2Line, C3Line
@@ -147,18 +148,19 @@ class Hy3Parser(object):
             gender=e1_line.gender,
             stroke=stroke,
             distance=e1_line.distance,
-            distance_units=meet.distance_units
+            # TODO: Fix this, set units based on Meet
+            # distance_units=meet.distance_units
+            distance_units='M',
+            meetevent__meet=meet
             )
 
         if new_event:
-            event.event_name = event.lower_age + r"/" + \
-                event.upper_age + event.gender + r" " + \
-                event.distance + event.distance_units + " " + \
+            event.event_name = str(event.lower_age) + r"/" + \
+                str(event.upper_age) + event.gender + r" " + \
+                str(event.distance) + event.distance_units + " " + \
                 event.stroke.type_name + \
                 (" Relay" if event.is_relay else "")
-
-        event.meets.add(meet)
-        event.save()
+            event.save()
 
         return event
 
@@ -168,10 +170,13 @@ class Hy3Parser(object):
         Get or create the entry for a given athlete and event
         Return the entry
         """
-        Entry.objects.get_or_create(
-                event = event,
-                athlete
+        entry, new_entry = Entry.objects.get_or_create(
+            event=event,
+            athleteentry__athlete=athlete
             )
+
+        return entry
+
     @staticmethod
     def __create_athlete(athlete_line, team):
         """
@@ -302,6 +307,7 @@ class Hy3Parser(object):
         """
         Parse event info out of a HY3 file and write to the database
         """
+        starttime = datetime.now()
         event_lines = Hy3Parser.__break_out_events(input_file)
 
         for event in event_lines:
@@ -341,6 +347,7 @@ class Hy3Parser(object):
                                                     team)
 
         athlete_ids = []
+        entry_ids = []
         for athlete in athletes:
             athlete_obj = Hy3Parser.__create_athlete(athlete['athlete'], team)
             athlete_ids.append(athlete_obj.id)
@@ -348,8 +355,11 @@ class Hy3Parser(object):
             for event in athlete['events']:
                 event_obj = Hy3Parser.__create_event(event, athlete_obj, meet)
                 entry_obj = Hy3Parser.__create_entry(event_obj, athlete_obj)
+                entry_ids.append(entry_obj.id)
 
-        return (meet.id, team.id, athlete_ids)
+        endtime = datetime.now()
+        print (endtime-starttime).total_seconds()
+        return (meet.id, team.id, athlete_ids, entry_ids)
 
 
 # TODO: Remove eventually
