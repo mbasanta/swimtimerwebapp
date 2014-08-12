@@ -55,7 +55,7 @@ class AthleteEntrySerializer(serializers.ModelSerializer):
     class Meta(object):
         '''Django meta for AthleteEntrySerializer'''
         model = AthleteEntry
-        fields = ('athlete', 'order',)
+        fields = ('athlete', 'athlete_order',)
 
 
 class EntrySerializer(serializers.ModelSerializer):
