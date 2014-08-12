@@ -4,7 +4,6 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from swimapp.models.meet import Meet
 from swimapp.models.event import Event
-from swimapp.models.heat import Heat
 from swimapp.models.team import Team
 from swimapp.models.entry import Entry
 from swimapp.models.version import Version
@@ -66,16 +65,6 @@ class EntrySerializer(serializers.ModelSerializer):
         '''Django meta for EventSerializer'''
         model = Entry
         fields = ('lane_number', 'seed_time', 'athleteentry_set',)
-
-
-class HeatSerializer(serializers.ModelSerializer):
-    '''Serializer for Heat class'''
-    entries = EntrySerializer(many=True)
-
-    class Meta(object):
-        '''Django meta for HeatSerializer'''
-        model = Heat
-        fields = ('heat_number', 'entries')
 
 
 class EventSerializer(serializers.ModelSerializer):

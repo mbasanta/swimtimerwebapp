@@ -1,8 +1,7 @@
-'''Classes related to entry in a heat'''
+'''Classes related to entry in a entry'''
 from django.contrib import admin
 from django.db import models
 from .athlete_entry import AthleteEntryInline
-from .heat import Heat
 from .event import Event
 
 
@@ -25,8 +24,7 @@ class Entry(models.Model):
     seed_time = models.FloatField(
         blank=True,
         null=True)
-    heat = models.ForeignKey(
-        Heat,
+    heat = models.IntegerField(
         blank=True,
         null=True)
     event = models.ForeignKey(Event)
@@ -41,8 +39,8 @@ class Entry(models.Model):
 
     def __unicode__(self):
         # pylint: disable=E1101
-        return (self.heat.event.event_name + ", Heat " +
-                str(self.heat.heat_number) + ", Lane " +
+        return (self.event.event_name + ", Heat " +
+                str(self.heat) + ", Lane " +
                 str(self.lane_number))
 
     @property
