@@ -77,7 +77,7 @@ class Meet(models.Model):
         '''Return distict list of athletes that are related to this meet'''
         # pylint: disable=E1101
         return Athlete.objects.filter(
-            entry__heat__event__meet=self.id).distinct()
+            entry__event__meet=self.id).distinct()
 
 
 class MeetAdmin(admin.ModelAdmin):  # pylint: disable=R0904
