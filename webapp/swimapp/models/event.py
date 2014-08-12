@@ -18,7 +18,6 @@ class EventManager(models.Manager):  # pylint: disable=R0904
 class Event(models.Model):
     '''Event info'''
     event_name = models.CharField(max_length=100)
-    event_number = models.IntegerField()
     lower_age = models.IntegerField()
     upper_age = models.IntegerField()
     gender = models.CharField(max_length=1,
