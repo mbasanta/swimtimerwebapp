@@ -18,6 +18,9 @@ class MeetEvent(models.Model):
     # http://stackoverflow.com/q/4379042/
     meet = models.ForeignKey('swimapp.Meet')
     event = models.ForeignKey('swimapp.Event')
+    event_number = models.IntegerField(
+        blank=True,
+        null=True)
 
     objects = MeetEventManager()  # pylint: disable=E1120
 
