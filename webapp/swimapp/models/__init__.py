@@ -7,7 +7,6 @@ from course_code import CourseCode
 from meet_type import MeetType
 from event import Event, EventAdmin
 from stroke import Stroke
-from heat import Heat
 from meet_event import MeetEvent
 from meet_config import MeetConfig
 from version import Version, VersionManager
