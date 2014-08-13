@@ -74,10 +74,18 @@ class Meet(models.Model):
 
     @property
     def athletes_for_meet(self):
-        '''Return distict list of athletes that are related to this meet'''
+        '''Return distinct list of athletes that are related to this meet'''
         # pylint: disable=E1101
-        return Athlete.objects.filter(
+        return Athlete.objects.prefetch_related().filter(
             entry__event__meet=self.id).distinct()
+
+    @property
+    def teams_for_meet(self):
+        '''Return distinct list of teams that are related to this meet'''
+        # pylint: disable=E1101
+        return Team.objects.prefetch_related().filter(
+            Q(meet=self) | Q(all_meet_set__team=self.team.id)
+            ).distinct()
 
 
 class MeetAdmin(admin.ModelAdmin):  # pylint: disable=R0904

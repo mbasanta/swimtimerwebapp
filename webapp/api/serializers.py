@@ -105,6 +105,17 @@ class MeetEventSerializer(serializers.ModelSerializer):
         fields = ('event_number', 'event')
 
 
+class ShortTeamSerializer(serializers.ModelSerializer):
+    '''Serializer for Team class without meet info'''
+
+    class Meta(object):
+        '''Django meta for TeamSerializer'''
+        model = Team
+        fields = ('id', 'team_name', 'team_abbr', 'team_color1', 'team_color2',
+                  'addr_name', 'addr', 'addr_city', 'addr_state', 'addr_zip',
+                  'addr_country')
+
+
 class MeetSerializer(serializers.ModelSerializer):
     '''Serializer for all meet info and dependencies'''
     facility = FacilitySerializer()
@@ -114,6 +125,7 @@ class MeetSerializer(serializers.ModelSerializer):
     course_code_2 = serializers.RelatedField(many=False)
     meet_config = serializers.RelatedField(many=False)
     athletes_for_meet = AthleteSerializer(many=True)
+    teams_for_meet = ShortTeamSerializer(many=True)
 
     class Meta(object):
         '''Django meta for MeetSerializer'''
@@ -121,7 +133,8 @@ class MeetSerializer(serializers.ModelSerializer):
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
-                  'meetevent_set', 'team', 'teams', 'athletes_for_meet')
+                  'meetevent_set', 'team', 'teams', 'athletes_for_meet',
+                  'teams_for_meet')
 
 
 class ShortMeetSerializer(serializers.ModelSerializer):
