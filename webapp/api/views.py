@@ -1,20 +1,16 @@
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_list_or_404
-from swimapp.models.meet import Meet
-from swimapp.models.event import Event
-from swimapp.models.team import Team
-from swimapp.models.version import Version
-from rest_framework import viewsets, generics
-from rest_framework import permissions
+from swimapp.models import Meet, Event, Team, Version
+from rest_framework import viewsets, generics, permissions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from oauth2_provider.ext.rest_framework import TokenHasScope
-from api.serializers import UserSerializer, GroupSerializer
-from api.serializers import MeetSerializer, EventSerializer
-from api.serializers import TeamSerializer
-from api.serializers import VersionSerializer
+from api.serializers import (UserSerializer, GroupSerializer,
+                             MeetSerializer, MeetListSerializer,
+                             EventSerializer, TeamSerializer,
+                             VersionSerializer)
 from api.renderers import SwimAppJSONRenderer
 
 
@@ -86,7 +82,7 @@ class MeetList(generics.ListCreateAPIView):
     '''List all meet, or create a new meet.'''
     queryset = Meet.objects.all()
     renderer_classes = (SwimAppJSONRenderer,)
-    serializer_class = MeetSerializer
+    serializer_class = MeetListSerializer
     permission_classes = [permissions.IsAuthenticated,]# TokenHasScope]
     #required_scopes = ['groups', 'write']
 
