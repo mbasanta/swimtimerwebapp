@@ -139,6 +139,11 @@ class MeetSerializer(serializers.ModelSerializer):
 
 class MeetListSerializer(serializers.ModelSerializer):
     '''Serializer for meets to give basic info for the list view'''
+    meet_masters = serializers.RelatedField()
+    meet_type = serializers.RelatedField()
+    course_code_1 = serializers.RelatedField()
+    course_code_2 = serializers.RelatedField()
+    meet_config = serializers.RelatedField()
 
     class Meta(object):
         '''Django meta for MeetSerializer'''
