@@ -137,6 +137,18 @@ class MeetSerializer(serializers.ModelSerializer):
                   'teams_for_meet')
 
 
+class MeetListSerializer(serializers.ModelSerializer):
+    '''Serializer for meets to give basic info for the list view'''
+
+    class Meta(object):
+        '''Django meta for MeetSerializer'''
+        model = Meet
+        fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
+                  'age_up_date', 'meet_masters', 'meet_type',
+                  'course_code_1', 'course_code_2', 'meet_config',
+                  'team', 'teams')
+
+
 class ShortMeetSerializer(serializers.ModelSerializer):
     '''Serializer for basic meet info'''
     facility = serializers.RelatedField()
