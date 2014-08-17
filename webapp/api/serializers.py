@@ -2,15 +2,8 @@
 # pylint: disable=E1123, E1120, R0903
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from swimapp.models.meet import Meet
-from swimapp.models.event import Event
-from swimapp.models.team import Team
-from swimapp.models.entry import Entry
-from swimapp.models.version import Version
-from swimapp.models.athlete import Athlete
-from swimapp.models.athlete_entry import AthleteEntry
-from swimapp.models.facility import Facility
-from swimapp.models.meet_event import MeetEvent
+from swimapp.models import (Meet, Event, Team, Entry, Version, Athlete,
+                            AthleteEntry, Facility, MeetEvent)
 from rest_framework import serializers
 
 
@@ -90,7 +83,7 @@ class FacilitySerializer(serializers.ModelSerializer):
     class Meta(object):
         '''Django meta for FacilitySerializer'''
         model = Facility
-        fields = ('facility_name', 'addr_name', 'addr', 'addr_city',
+        fields = ('id', 'facility_name', 'addr_name', 'addr', 'addr_city',
                   'addr_state', 'addr_zip', 'length_1', 'length_2',
                   'latitude', 'longitude', 'elevation')
 
