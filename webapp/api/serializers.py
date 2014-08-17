@@ -48,7 +48,7 @@ class AthleteEntrySerializer(serializers.ModelSerializer):
     class Meta(object):
         '''Django meta for AthleteEntrySerializer'''
         model = AthleteEntry
-        fields = ('athlete', 'athlete_order',)
+        fields = ('id', 'athlete', 'athlete_order',)
 
 
 class EntrySerializer(serializers.ModelSerializer):
@@ -58,7 +58,7 @@ class EntrySerializer(serializers.ModelSerializer):
     class Meta(object):
         '''Django meta for EventSerializer'''
         model = Entry
-        fields = ('lane_number', 'seed_time', 'heat',
+        fields = ('id', 'lane_number', 'seed_time', 'heat',
                   'athleteentry_set',)
 
 
@@ -95,7 +95,7 @@ class MeetEventSerializer(serializers.ModelSerializer):
     class Meta(object):
         '''Django meta for MeetEventSerializer'''
         model = MeetEvent
-        fields = ('event_number', 'event')
+        fields = ('id', 'event_number', 'event')
 
 
 class ShortTeamSerializer(serializers.ModelSerializer):
