@@ -1,0 +1,27 @@
+{% if user.is_authenticated %}
+
+<ul class="nav navbar-nav navbar-right">
+  <li class="dropdown">
+    <a class="dropdown-toggle" id="dropuser" data-toggle="dropdown"
+      href="#">{{ user.email }} <b class="caret"></b></a>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropuser">
+      <li><a href="{% url "swimapp_logout" %}">Logout</a></li>
+    </ul>
+  </li>
+</ul>
+
+{% else %}
+
+<form class="navbar-form navbar-right" action="{% url "swimapp_login" %}"
+    method="post" accept-charset="utf-8">
+  <div class="form-group">
+    <input name="username" type="text" placeholder="Email" class="form-control">
+  </div>
+  <div class="form-group">
+    <input name="password" type="password" placeholder="Password" class="form-control">
+  </div>
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Sign in</button>
+</form>
+
+{% endif %}
