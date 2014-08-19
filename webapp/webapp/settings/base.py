@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'compressor',
     'oauth2_provider',
     'rest_framework',
+    'crispy_forms',
 
     # Database migrations
     'south',
@@ -181,7 +182,8 @@ def custom_show_toolbar(request):
     try:
         return request.user.is_admin
     except:
-        return False
+        #return False
+        return True
 
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -352,4 +354,12 @@ REST_FRAMEWORK = {
 SOUTH_TESTS_MIGRATE = False  # To disable migrations and use syncdb instead
 SKIP_SOUTH_TESTS = True  # To disable South's own unit tests
 
-ATOMIC_REQUESTS = True # use transactions
+ATOMIC_REQUESTS = True  # use transactions
+
+# Authentication URLS
+LOGIN_URL = 'swimapp_login'
+LOGOUT_URL = 'swimapp_logout'
+LOGIN_REDIRECT_URL = '/'
+
+# Crispy Forms Settings
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
