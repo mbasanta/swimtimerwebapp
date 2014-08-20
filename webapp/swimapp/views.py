@@ -30,6 +30,7 @@ def edit_team(request, pk=None):
 def view_team(request, pk):
     """View to show for a readonly view of a team"""
     team = get_object_or_404(Team, pk=pk)
-    if not team.users.filter(username=request.user.username):
+    if request.user.is_admin or team.users.filter(email=request.user.email):
+        return render(request, "swimapp/view_team.html", {"team": team})
+    else:
         raise PermissionDenied
-    return render(request, "swimapp/view_team.html", {"team": team})
