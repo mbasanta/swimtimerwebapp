@@ -1,8 +1,7 @@
 '''Classes related to entry in a entry'''
 from django.contrib import admin
 from django.db import models
-from .athlete_entry import AthleteEntryInline
-from .event import Event
+from swimapp.models import MeetEvent, AthleteEntryInline
 
 
 class EntryManager(models.Manager):  # pylint: disable=R0904
@@ -27,7 +26,7 @@ class Entry(models.Model):
     heat = models.IntegerField(
         blank=True,
         null=True)
-    event = models.ForeignKey(Event)
+    meetevent = models.ForeignKey(MeetEvent)
     athletes = models.ManyToManyField('Athlete', through='AthleteEntry')
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
