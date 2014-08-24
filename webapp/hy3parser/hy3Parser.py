@@ -10,7 +10,7 @@ from datetime import datetime
 from django.db import transaction
 from swimapp.models import (Meet, Facility, CourseCode, MeetType,
                             Team, TeamType, TeamRegistration,
-                            Athlete, Event, Stroke, Entry)
+                            Athlete, Event, Stroke, Entry, MeetEvent)
 from hy3parser.constants import LINE_TYPE_CONSTANTS
 from hy3parser.line_formats.b_lines import B1Line, B2Line
 from hy3parser.line_formats.c_lines import C1Line, C2Line, C3Line
@@ -107,14 +107,16 @@ class Hy3Parser(object):
             )
 
         if new_meet:
-            course_code_1, new_course_code_1 = CourseCode.objects.get_or_create(
-                type_abbr=b2_line.course_code_1,
-                defaults={'type_name': b2_line.course_code_1}
+            course_code_1, new_course_code_1 = CourseCode.objects \
+                .get_or_create(
+                    type_abbr=b2_line.course_code_1,
+                    defaults={'type_name': b2_line.course_code_1}
                 )
 
-            course_code_2, new_course_code_2 = CourseCode.objects.get_or_create(
-                type_abbr=b2_line.course_code_2,
-                defaults={'type_name': b2_line.course_code_2}
+            course_code_2, new_course_code_2 = CourseCode.objects \
+                .get_or_create(
+                    type_abbr=b2_line.course_code_2,
+                    defaults={'type_name': b2_line.course_code_2}
                 )
 
             meet_type, new_meet_type = MeetType.objects.get_or_create(
@@ -130,7 +132,7 @@ class Hy3Parser(object):
         return meet
 
     @staticmethod
-    def __create_event(event_line, athlete, meet):
+    def __create_meet_event(event_line, meet):
         """
         Get or create the event for a given athlete and return the event
         """
@@ -142,7 +144,6 @@ class Hy3Parser(object):
             )
 
         event, new_event = Event.objects.get_or_create(
-            event_number=e1_line.event_number,
             lower_age=e1_line.lower_age,
             upper_age=e1_line.upper_age,
             gender=e1_line.gender,
@@ -151,7 +152,11 @@ class Hy3Parser(object):
             # TODO: Fix this, set units based on Meet
             # distance_units=meet.distance_units
             distance_units='M',
-            meetevent__meet=meet
+            )
+
+        meet_event, new_meet_event = MeetEvent.objects.get_or_create(
+            event=event,
+            meet=meet,
             )
 
         if new_event:
@@ -162,16 +167,16 @@ class Hy3Parser(object):
                 (" Relay" if event.is_relay else "")
             event.save()
 
-        return event
+        return meet_event
 
     @staticmethod
-    def __create_entry(event, athlete):
+    def __create_entry(meetevent, athlete):
         """
-        Get or create the entry for a given athlete and event
+        Get or create the entry for a given athlete and meet_event
         Return the entry
         """
         entry, new_entry = Entry.objects.get_or_create(
-            event=event,
+            meetevent=meetevent,
             athleteentry__athlete=athlete
             )
 
@@ -353,8 +358,8 @@ class Hy3Parser(object):
             athlete_ids.append(athlete_obj.id)
 
             for event in athlete['events']:
-                event_obj = Hy3Parser.__create_event(event, athlete_obj, meet)
-                entry_obj = Hy3Parser.__create_entry(event_obj, athlete_obj)
+                meet_event_obj = Hy3Parser.__create_meet_event(event, meet)
+                entry_obj = Hy3Parser.__create_entry(meet_event_obj, athlete_obj)
                 entry_ids.append(entry_obj.id)
 
         endtime = datetime.now()
