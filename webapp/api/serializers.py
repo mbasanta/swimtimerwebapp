@@ -62,25 +62,26 @@ class EntrySerializer(serializers.ModelSerializer):
                   'athleteentry_set',)
 
 
-class MeetEventSerializer(serializers.ModelSerializer):
-    '''Serializer for MeetEvent class'''
-    class Meta(object):
-        '''Django meta for MeetEventSerializer'''
-        model = MeetEvent
-        fields = ('id', 'meet', 'event', 'event_number')
-
-
 class EventSerializer(serializers.ModelSerializer):
     '''Serializer for Event class'''
-    meetevent_set = MeetEventSerializer(many=True)
     stroke = serializers.RelatedField(many=False)
 
     class Meta(object):
         '''Django meta for EventSerializer'''
         model = Event
-        fields = ('id', 'event_name', 'lower_age', 'upper_age',
-                  'gender', 'stroke', 'distance', 'distance_units',
-                  'is_relay', 'meetevent_set')
+        fields = ('id', 'event_name', 'lower_age', 'upper_age', 'gender',
+                  'stroke', 'distance', 'distance_units', 'is_relay')
+
+
+class MeetEventSerializer(serializers.ModelSerializer):
+    '''Serializer for MeetEvent class'''
+    event = EventSerializer(many=False)
+    entry_set = EntrySerializer(many=True)
+
+    class Meta(object):
+        '''Django meta for MeetEventSerializer'''
+        model = MeetEvent
+        fields = ('id', 'event', 'entry_set', 'event_number')
 
 
 class FacilitySerializer(serializers.ModelSerializer):
