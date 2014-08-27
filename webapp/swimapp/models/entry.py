@@ -38,7 +38,8 @@ class Entry(models.Model):
 
     def __unicode__(self):
         # pylint: disable=E1101
-        return (self.meetevent.event.event_name + ", Heat " +
+        #return (self.meetevent.event.event_name + 
+        return ("Heat " +
                 str(self.heat) + ", Lane " +
                 str(self.lane_number))
 
