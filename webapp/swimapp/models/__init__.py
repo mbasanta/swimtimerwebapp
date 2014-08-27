@@ -11,6 +11,7 @@ from meet_event import MeetEvent
 from meet_config import MeetConfig
 from version import Version, VersionManager
 from athlete import Athlete, AthleteAdmin, AthleteManager
-from athlete_entry import AthleteEntry, AthleteEntryInline, AthleteEntryManager
+from athlete_entry import (AthleteEntry, AthleteEntryInline,
+                           AthleteEntryManager, AthleteEntryAdmin)
 from entry import Entry, EntryAdmin, EntryManager
 from facility import Facility, FacilityManager

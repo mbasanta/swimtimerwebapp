@@ -42,3 +42,16 @@ class AthleteEntryInline(admin.TabularInline):  # pylint: disable=R0901
     '''Inline methods for meet events'''
     model = AthleteEntry
     extra = 1
+
+
+class AthleteEntryAdmin(admin.ModelAdmin):
+    """
+    Override AthleteEntryAdmin to eliminate some of the
+    excessive queries
+    """
+
+    def queryset(self, request):
+        """Override queryset to limit excessive queries"""
+        return super(AthleteEntryAdmin, self).queryset(request) \
+            .select_related('athlete', 'entry', 'entry__meetevent',
+                            'entry__meetevent__event')
