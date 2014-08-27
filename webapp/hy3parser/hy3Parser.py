@@ -8,6 +8,7 @@ if __name__ == '__main__' and __package__ is None:
 
 from datetime import datetime
 from django.db import transaction
+from django.core.exceptions import ObjectDoesNotExist
 from swimapp.models import (Meet, Facility, CourseCode, MeetType,
                             Team, TeamType, TeamRegistration,
                             Athlete, Event, Stroke, Entry, MeetEvent)
@@ -175,10 +176,17 @@ class Hy3Parser(object):
         Get or create the entry for a given athlete and meet_event
         Return the entry
         """
-        entry, new_entry = Entry.objects.get_or_create(
-            meetevent=meetevent,
-            athleteentry__athlete=athlete
-            )
+
+        try:
+            entry = Entry.objects.get(
+                meetevent=meetevent,
+                athleteentry__athlete=athlete
+                )
+        except ObjectDoesNotExist:
+            entry = Entry.objects.create(meetevent=meetevent)
+            entry.athleteentry_set.create(
+                athlete=athlete,
+                entry=entry)
 
         return entry
 
