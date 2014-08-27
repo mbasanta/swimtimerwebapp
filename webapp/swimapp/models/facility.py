@@ -1,7 +1,7 @@
 '''Classes related to Facility'''
 from django.db import models
 from localflavor.us.models import USStateField
-from .course_code import CourseCode
+from swimapp.models.course_code import CourseCode
 
 
 class FacilityManager(models.Manager):  # pylint: disable=R0904
@@ -23,6 +23,7 @@ class Facility(models.Model):
                                  related_name='length_2_set',
                                  blank=True,
                                  null=True)
+    lane_count = models.IntegerField(blank=True, null=True)
     addr_name = models.CharField(max_length=30, blank=True, null=True)
     addr = models.CharField(max_length=30, blank=True, null=True)
     addr_city = models.CharField(max_length=30, blank=True, null=True)
