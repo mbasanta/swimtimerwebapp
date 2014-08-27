@@ -178,6 +178,7 @@ class Hy3Parser(object):
         """
 
         try:
+            # TODO: Need to make sure this is working with multiple athletes
             entry = Entry.objects.get(
                 meetevent=meetevent,
                 athleteentry__athlete=athlete
@@ -367,7 +368,8 @@ class Hy3Parser(object):
 
             for event in athlete['events']:
                 meet_event_obj = Hy3Parser.__create_meet_event(event, meet)
-                entry_obj = Hy3Parser.__create_entry(meet_event_obj, athlete_obj)
+                entry_obj = Hy3Parser.__create_entry(
+                    meet_event_obj, athlete_obj)
                 entry_ids.append(entry_obj.id)
 
         endtime = datetime.now()
