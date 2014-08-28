@@ -5,12 +5,12 @@ Spyder Editor
 Populates swimtimer app data base with some preconfigured teams, athletes, 
 meets, events, and entries.
 
-Requires male and female athlete files ('Male Athletes.csv' and
- 'Female Athletes.csv')
-
 Flags:
     createDomainTables: recreates all domain level tables
     createTeamsAndAthletes: self explainatory
+    
+Requires male and female athlete files ('Male Athletes.csv' and
+'Female Athletes.csv') if createDomainTables is set to 'True'
 
 This temporary script file is located here:
 /Users/bkant/.spyder2/.temp.py
