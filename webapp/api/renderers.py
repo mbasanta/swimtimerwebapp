@@ -41,8 +41,10 @@ class SwimAppJSONRenderer(JSONRenderer):
         response_data['version'] = version
 
         local_tz = pytz.timezone('America/New_York')
+        timestamp = datetime.now(local_tz).astimezone(pytz.utc) \
+            .strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        response_data['timestamp'] = datetime.now(local_tz)
+        response_data['timestamp'] = timestamp
 
         #call super to render the response
         response = super(SwimAppJSONRenderer, self).render(response_data,
