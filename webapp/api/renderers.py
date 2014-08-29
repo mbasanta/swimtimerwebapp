@@ -25,7 +25,8 @@ class SwimAppJSONRenderer(JSONRenderer):
         version = {}
         versionInfo = Version.objects.latest_version()
         version['version_number'] = versionInfo.version
-        version['version_date'] = versionInfo.datetime
+        version['version_date'] = versionInfo.datetime \
+            .strftime("%Y-%m-%dT%H:%M:%SZ")
 
         resource = getattr(renderer_context.get('view').get_serializer().Meta,
                            'resource_name',
