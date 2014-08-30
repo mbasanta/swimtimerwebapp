@@ -10,6 +10,11 @@ from .choices_constants import GENDER_CHOICES, DISTANCE_UNIT_CHOICES
 class EventManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to events'''
 
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(EventManager, self).get_queryset() \
+            .select_related('stroke')
+
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
