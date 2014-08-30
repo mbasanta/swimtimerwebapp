@@ -7,6 +7,11 @@ from swimapp.models import MeetEvent, AthleteEntryInline
 class EntryManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to entries'''
 
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(EntryManager, self).get_queryset() \
+            .select_related('meetevent', 'meetevent__event')
+
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
@@ -31,6 +36,8 @@ class Entry(models.Model):
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
+    objects = EntryManager()  # pylint: disable=E1120
+
     class Meta(object):
         '''Meta for model to be used by django'''
         # pylint: disable=R0903
@@ -38,8 +45,7 @@ class Entry(models.Model):
 
     def __unicode__(self):
         # pylint: disable=E1101
-        #return (self.meetevent.event.event_name + 
-        return ("Heat " +
+        return (self.meetevent.event.event_name +
                 str(self.heat) + ", Lane " +
                 str(self.lane_number))
 
