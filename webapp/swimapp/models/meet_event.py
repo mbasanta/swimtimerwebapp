@@ -7,6 +7,11 @@ from django.core.urlresolvers import reverse
 class MeetEventManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to meet events'''
 
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(MeetEventManager, self).get_queryset() \
+            .select_related('meet', 'event')
+
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
