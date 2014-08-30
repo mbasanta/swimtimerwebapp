@@ -23,6 +23,12 @@ class MeetManager(models.Manager):  # pylint: disable=R0904
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
 
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(MeetManager, self).get_queryset() \
+            .select_related('meet_type', 'course_code_1', 'course_code_2',
+                            'meet_config', 'team', 'teams', 'events')
+
     def meets_for_team(self, team):  # pylint: disable=E1002
         '''Return a queryset for meets that belong to a team'''
         return super(MeetManager, self).get_queryset().filter(Q(team=team.id))
