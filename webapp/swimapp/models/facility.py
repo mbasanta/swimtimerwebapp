@@ -7,6 +7,11 @@ from swimapp.models.course_code import CourseCode
 class FacilityManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to facilities'''
 
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(FacilityManager, self).get_queryset() \
+            .select_related('length_1', 'length_2')
+
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
