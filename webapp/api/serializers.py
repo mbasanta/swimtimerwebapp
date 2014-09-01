@@ -59,7 +59,7 @@ class EntrySerializer(serializers.ModelSerializer):
         '''Django meta for EventSerializer'''
         model = Entry
         fields = ('id', 'lane_number', 'seed_time', 'heat',
-                  'athleteentry_set',)
+                  'override_order', 'athleteentry_set',)
 
 
 class EventSerializer(serializers.ModelSerializer):
