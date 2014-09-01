@@ -28,16 +28,18 @@ class AppUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
-        """Create and save user with the given email and password"""
-        return self._create_user(email, password, False, False,
-                                 **extra_fields)
-
-    def create_superuser(self, email, password, **extra_fields):
-        """Create superuser with the given email, date of birth and
-        password"""
-        return self._create_user(email, password, True, True,
-                                 **extra_fields)
+    def create_superuser(self, email, password):
+        '''
+        Create superuser with the given email, date of birth and
+        password
+        '''
+        user = self.create_user(email,
+            password=password
+        )
+        user.is_admin = True
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
 
 
 class AppUser(AbstractBaseUser, PermissionsMixin):

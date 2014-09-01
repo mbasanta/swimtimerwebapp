@@ -1,12 +1,16 @@
 '''Classes related to entry in a entry'''
 from django.contrib import admin
 from django.db import models
-from .athlete_entry import AthleteEntryInline
-from .event import Event
+from swimapp.models import MeetEvent, AthleteEntryInline
 
 
 class EntryManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to entries'''
+
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(EntryManager, self).get_queryset() \
+            .select_related('meetevent', 'meetevent__event')
 
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
@@ -27,10 +31,15 @@ class Entry(models.Model):
     heat = models.IntegerField(
         blank=True,
         null=True)
-    event = models.ForeignKey(Event)
+    override_order = models.IntegerField(
+        blank=True,
+        null=True)
+    meetevent = models.ForeignKey(MeetEvent)
     athletes = models.ManyToManyField('Athlete', through='AthleteEntry')
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
+
+    objects = EntryManager()  # pylint: disable=E1120
 
     class Meta(object):
         '''Meta for model to be used by django'''
@@ -39,7 +48,7 @@ class Entry(models.Model):
 
     def __unicode__(self):
         # pylint: disable=E1101
-        return (self.event.event_name + ", Heat " +
+        return (self.meetevent.event.event_name +
                 str(self.heat) + ", Lane " +
                 str(self.lane_number))
 

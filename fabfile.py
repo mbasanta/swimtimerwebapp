@@ -22,7 +22,6 @@ env.key_filename = os.path.expanduser(os.path.join(aws_cfg["key_dir"],
 
 @task
 def setup_aws_account():
-
     ec2 = connect_to_ec2()
     print ec2
 
@@ -331,7 +330,8 @@ def restart():
     Reload nginx/gunicorn
     """
     with settings(warn_only=True):
-        sudo("supervisorctl restart {app_name}".format(app_name=app_settings["APP_NAME"]))
+        sudo("supervisorctl restart {app_name}"
+             .format(app_name=app_settings["APP_NAME"]))
         sudo('/etc/init.d/nginx reload')
 
 

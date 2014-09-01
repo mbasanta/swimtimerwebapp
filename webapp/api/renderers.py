@@ -25,7 +25,8 @@ class SwimAppJSONRenderer(JSONRenderer):
         version = {}
         versionInfo = Version.objects.latest_version()
         version['version_number'] = versionInfo.version
-        version['version_date'] = versionInfo.datetime
+        version['version_date'] = versionInfo.datetime \
+            .strftime("%Y-%m-%dT%H:%M:%SZ")
 
         resource = getattr(renderer_context.get('view').get_serializer().Meta,
                            'resource_name',
@@ -41,8 +42,10 @@ class SwimAppJSONRenderer(JSONRenderer):
         response_data['version'] = version
 
         local_tz = pytz.timezone('America/New_York')
+        timestamp = datetime.now(local_tz).astimezone(pytz.utc) \
+            .strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        response_data['timestamp'] = datetime.now(local_tz)
+        response_data['timestamp'] = timestamp
 
         #call super to render the response
         response = super(SwimAppJSONRenderer, self).render(response_data,

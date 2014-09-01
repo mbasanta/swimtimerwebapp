@@ -7,6 +7,12 @@ from django.core.urlresolvers import reverse
 class AthleteEntryManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to athelete entries'''
 
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(AthleteEntryManager, self).get_queryset() \
+            .select_related('athlete', 'entry', 'entry__meetevent',
+                            'entry__meetevent__event')
+
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
@@ -42,3 +48,16 @@ class AthleteEntryInline(admin.TabularInline):  # pylint: disable=R0901
     '''Inline methods for meet events'''
     model = AthleteEntry
     extra = 1
+
+
+class AthleteEntryAdmin(admin.ModelAdmin):  # pylint: disable=R0904
+    """
+    Override AthleteEntryAdmin to eliminate some of the
+    excessive queries
+    """
+
+    def queryset(self, request):
+        """Override queryset to limit excessive queries"""
+        return super(AthleteEntryAdmin, self).queryset(request) \
+            .select_related('athlete', 'entry', 'entry__meetevent',
+                            'entry__meetevent__event')

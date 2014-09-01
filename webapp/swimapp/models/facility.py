@@ -1,11 +1,16 @@
 '''Classes related to Facility'''
 from django.db import models
 from localflavor.us.models import USStateField
-from .course_code import CourseCode
+from swimapp.models.course_code import CourseCode
 
 
 class FacilityManager(models.Manager):  # pylint: disable=R0904
     '''Static classes related to facilities'''
+
+    def get_queryset(self):
+        '''Override manager to use select realted'''
+        return super(FacilityManager, self).get_queryset() \
+            .select_related('length_1', 'length_2')
 
     class Meta(object):  # pylint: disable=R0903
         '''Meta for model to be used by django'''
@@ -23,6 +28,7 @@ class Facility(models.Model):
                                  related_name='length_2_set',
                                  blank=True,
                                  null=True)
+    lane_count = models.IntegerField(blank=True, null=True)
     addr_name = models.CharField(max_length=30, blank=True, null=True)
     addr = models.CharField(max_length=30, blank=True, null=True)
     addr_city = models.CharField(max_length=30, blank=True, null=True)
