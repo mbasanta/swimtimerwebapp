@@ -182,8 +182,7 @@ def custom_show_toolbar(request):
     try:
         return request.user.is_admin
     except:
-        #return False
-        return True
+        return False
 
 
 DEBUG_TOOLBAR_CONFIG = {
