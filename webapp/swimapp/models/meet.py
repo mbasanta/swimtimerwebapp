@@ -55,6 +55,7 @@ class Meet(models.Model):
                                       related_name='course_code_2_set',
                                       blank=True,
                                       null=True)
+    lane_count = models.IntegerField(blank=True, null=True)
     meet_config = models.ForeignKey(MeetConfig, null=True)
     team = models.ForeignKey(Team, null=True)
     teams = models.ManyToManyField(Team, related_name='all_meet_set')
