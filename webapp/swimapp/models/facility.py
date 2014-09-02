@@ -28,7 +28,8 @@ class Facility(models.Model):
                                  related_name='length_2_set',
                                  blank=True,
                                  null=True)
-    lane_count = models.IntegerField(blank=True, null=True)
+    lane_count_1 = models.IntegerField(blank=True, null=True)
+    lane_count_2 = models.IntegerField(blank=True, null=True)
     addr_name = models.CharField(max_length=30, blank=True, null=True)
     addr = models.CharField(max_length=30, blank=True, null=True)
     addr_city = models.CharField(max_length=30, blank=True, null=True)
