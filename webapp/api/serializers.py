@@ -94,7 +94,8 @@ class FacilitySerializer(serializers.ModelSerializer):
         model = Facility
         fields = ('id', 'facility_name', 'addr_name', 'addr', 'addr_city',
                   'addr_state', 'addr_zip', 'length_1', 'length_2',
-                  'latitude', 'longitude', 'elevation')
+                  'lane_count_1', 'lane_count_2', 'latitude', 'longitude',
+                  'elevation')
 
 
 class ShortTeamSerializer(serializers.ModelSerializer):
@@ -125,8 +126,8 @@ class MeetSerializer(serializers.ModelSerializer):
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
-                  'meetevent_set', 'team', 'teams', 'athletes_for_meet',
-                  'teams_for_meet')
+                  'lane_count', 'meetevent_set', 'team', 'teams',
+                  'athletes_for_meet', 'teams_for_meet')
 
 
 class MeetListSerializer(serializers.ModelSerializer):
@@ -143,7 +144,7 @@ class MeetListSerializer(serializers.ModelSerializer):
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
-                  'team', 'teams')
+                  'lane_count', 'team', 'teams')
 
 
 class ShortMeetSerializer(serializers.ModelSerializer):
