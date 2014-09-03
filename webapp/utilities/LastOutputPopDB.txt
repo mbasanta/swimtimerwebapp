@@ -4,19 +4,10 @@
 	Deleted event
 	Deleted meet teams
 	Deleted meet
-	Deleted athlete teams
-	Deleted athlete
-	Deleted facility
-	Deleted team users
-	Deleted team
 Cleaned out DB
-Teams complete
-Facilities complete
-Athletes complete
-Athlete teams complete
 Meets and Meet Teams complete
 Events complete
-	Meet Id: 111
+	Meet Id: 114
 		Team Id: 61
 			Age Group: (0, 8)
 				Gender: M
@@ -75,7 +66,7 @@ Events complete
 		Team athlete count: 66
 		Team entry count: 186
 		Team entry athlete count: 264
-	Meet Id: 112
+	Meet Id: 115
 		Team Id: 60
 			Age Group: (0, 8)
 				Gender: M
@@ -134,7 +125,7 @@ Events complete
 		Team athlete count: 68
 		Team entry count: 194
 		Team entry athlete count: 272
-	Meet Id: 113
+	Meet Id: 116
 		Team Id: 59
 			Age Group: (0, 8)
 				Gender: M
