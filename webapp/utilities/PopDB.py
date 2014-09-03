@@ -994,11 +994,11 @@ for meetId in meetIds:
                         entryType = random.choice(weightedEntryType)
                         
                         if entryType == 'seed':
-                            seedTime = random.gauss(eventProxyTime['sigma'], eventProxyTime['avg'])
+                            seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
                         elif entryType == 'order':
                             order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                         elif entryType == 'both':
-                            seedTime = random.gauss(eventProxyTime['sigma'], eventProxyTime['avg'])
+                            seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
                             order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                         
                         curs.execute("""INSERT INTO swimapp_entry (meetevent_id,""" \
@@ -1035,11 +1035,11 @@ for meetId in meetIds:
                     entryType = random.choice(weightedEntryType)
                     
                     if entryType == 'seed':
-                        seedTime = random.gauss(eventProxyTime['sigma'], eventProxyTime['avg'])
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
                     elif entryType == 'order':
                         order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                     elif entryType == 'both':
-                        seedTime = random.gauss(eventProxyTime['sigma'], eventProxyTime['avg'])
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
                         order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                     
                     curs.execute("""INSERT INTO swimapp_entry (meetevent_id,""" \
@@ -1074,11 +1074,11 @@ for meetId in meetIds:
                     entryType = random.choice(weightedEntryType)
                     
                     if entryType == 'seed':
-                        seedTime = random.gauss(eventProxyTime['sigma'], eventProxyTime['avg'])
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
                     elif entryType == 'order':
                         order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                     elif entryType == 'both':
-                        seedTime = random.gauss(eventProxyTime['sigma'], eventProxyTime['avg'])
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
                         order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                     
                     curs.execute("""INSERT INTO swimapp_entry (meetevent_id,""" \
