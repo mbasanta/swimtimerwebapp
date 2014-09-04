@@ -1,0 +1,186 @@
+	Deleted athlete entry
+	Deleted entry
+	Deleted meet event
+	Deleted event
+	Deleted meet teams
+	Deleted meet
+Cleaned out DB
+Meets and Meet Teams complete
+Events complete
+	Meet Id: 114
+		Team Id: 61
+			Age Group: (0, 8)
+				Gender: M
+				Age group athlete count: 9
+				Gender: F
+				Age group athlete count: 13
+			Age Group: (9, 10)
+				Gender: M
+				Age group athlete count: 4
+				Gender: F
+				Age group athlete count: 5
+			Age Group: (11, 12)
+				Gender: M
+				Age group athlete count: 3
+				Gender: F
+				Age group athlete count: 3
+			Age Group: (13, 14)
+				Gender: M
+				Age group athlete count: 3
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (15, 18)
+				Gender: M
+				Age group athlete count: 10
+				Gender: F
+				Age group athlete count: 14
+		Team athlete count: 68
+		Team entry count: 194
+		Team entry athlete count: 272
+		Team Id: 59
+			Age Group: (0, 8)
+				Gender: M
+				Age group athlete count: 10
+				Gender: F
+				Age group athlete count: 9
+			Age Group: (9, 10)
+				Gender: M
+				Age group athlete count: 1
+				Gender: F
+				Age group athlete count: 2
+			Age Group: (11, 12)
+				Gender: M
+				Age group athlete count: 6
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (13, 14)
+				Gender: M
+				Age group athlete count: 3
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (15, 18)
+				Gender: M
+				Age group athlete count: 11
+				Gender: F
+				Age group athlete count: 16
+		Team athlete count: 66
+		Team entry count: 186
+		Team entry athlete count: 264
+	Meet Id: 115
+		Team Id: 60
+			Age Group: (0, 8)
+				Gender: M
+				Age group athlete count: 15
+				Gender: F
+				Age group athlete count: 9
+			Age Group: (9, 10)
+				Gender: M
+				Age group athlete count: 1
+				Gender: F
+				Age group athlete count: 5
+			Age Group: (11, 12)
+				Gender: M
+				Age group athlete count: 4
+				Gender: F
+				Age group athlete count: 2
+			Age Group: (13, 14)
+				Gender: M
+				Age group athlete count: 4
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (15, 18)
+				Gender: M
+				Age group athlete count: 8
+				Gender: F
+				Age group athlete count: 12
+		Team athlete count: 64
+		Team entry count: 172
+		Team entry athlete count: 256
+		Team Id: 61
+			Age Group: (0, 8)
+				Gender: M
+				Age group athlete count: 9
+				Gender: F
+				Age group athlete count: 13
+			Age Group: (9, 10)
+				Gender: M
+				Age group athlete count: 4
+				Gender: F
+				Age group athlete count: 5
+			Age Group: (11, 12)
+				Gender: M
+				Age group athlete count: 3
+				Gender: F
+				Age group athlete count: 3
+			Age Group: (13, 14)
+				Gender: M
+				Age group athlete count: 3
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (15, 18)
+				Gender: M
+				Age group athlete count: 10
+				Gender: F
+				Age group athlete count: 14
+		Team athlete count: 68
+		Team entry count: 194
+		Team entry athlete count: 272
+	Meet Id: 116
+		Team Id: 59
+			Age Group: (0, 8)
+				Gender: M
+				Age group athlete count: 10
+				Gender: F
+				Age group athlete count: 9
+			Age Group: (9, 10)
+				Gender: M
+				Age group athlete count: 1
+				Gender: F
+				Age group athlete count: 2
+			Age Group: (11, 12)
+				Gender: M
+				Age group athlete count: 6
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (13, 14)
+				Gender: M
+				Age group athlete count: 3
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (15, 18)
+				Gender: M
+				Age group athlete count: 11
+				Gender: F
+				Age group athlete count: 16
+		Team athlete count: 66
+		Team entry count: 186
+		Team entry athlete count: 264
+		Team Id: 60
+			Age Group: (0, 8)
+				Gender: M
+				Age group athlete count: 15
+				Gender: F
+				Age group athlete count: 9
+			Age Group: (9, 10)
+				Gender: M
+				Age group athlete count: 1
+				Gender: F
+				Age group athlete count: 5
+			Age Group: (11, 12)
+				Gender: M
+				Age group athlete count: 4
+				Gender: F
+				Age group athlete count: 2
+			Age Group: (13, 14)
+				Gender: M
+				Age group athlete count: 4
+				Gender: F
+				Age group athlete count: 4
+			Age Group: (15, 18)
+				Gender: M
+				Age group athlete count: 8
+				Gender: F
+				Age group athlete count: 12
+		Team athlete count: 64
+		Team entry count: 172
+		Team entry athlete count: 256
