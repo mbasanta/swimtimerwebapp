@@ -22,6 +22,7 @@ import datetime
 import random
 import copy
 import numpy as np
+import re
 
 #takes csv string of athlete properties and returns a dictionary
 def athleteFromProps(propsStr):
@@ -36,6 +37,20 @@ def athleteFromProps(propsStr):
     
     return athlete
     
+def timeFromStr(timeStr):
+    pattern = "((\d{1,2}):)?(\d{1,2}).(\d{2})"
+    match = re.match(pattern, timeStr)
+    if (match):
+        time = 0
+        
+        if (match.group(2)):
+            time += 60.0 * float(match.group(2))
+        
+        time += float(match.group(3)) + float(match.group(4)) / 100.0
+        
+        return time
+    else:
+        return 0 
 
 createDomainTables = False
 createTeamsAndAthletes = False
@@ -48,7 +63,7 @@ try:
 except Exception as e:
     print "I am unable to connect to the database"
     print e
-    
+
 curs = conn.cursor()
 
 #clean out everything
@@ -437,6 +452,8 @@ if createTeamsAndAthletes:
     #   longitude           (double, nullable)
     #   time_entered        (timestamp, not null)
     #   time_modified       (timestamp, not null)
+    #   lane_count_1        (int, nullable)
+    #   lane_count_2        (int, nullable)
     
     try:
         curs.execute("""SELECT team_short_name FROM swimapp_team;""")
@@ -446,9 +463,11 @@ if createTeamsAndAthletes:
         yardsCourseId = curs.fetchone()
         
         for teamName in teamNames:
+            facilityLaneCount = random.randrange(5,9)
             facilityName = teamName[0] + ' Home'
             curs.execute("""INSERT INTO swimapp_facility (facility_name, length_1_id,""" \
-            """ time_entered, time_modified) VALUES (%s, %s, %s, %s);""", (facilityName, yardsCourseId, now, now))
+            """ time_entered, time_modified, lane_count_1) VALUES (%s, %s, %s, %s, %s);""",
+            (facilityName, yardsCourseId, now, now, facilityLaneCount))
             
     except Exception as e:
         print "Failed to create Facilities"
@@ -553,6 +572,7 @@ if createTeamsAndAthletes:
 #   time_modified       (timestamp, not null)
 #   meet_masters        (bool, not null)
 #   meet_type_id        (int, nullable)
+#   lane_count          (int, nullable)
 
 #========================================
 #Meet Teams
@@ -568,8 +588,9 @@ if createTeamsAndAthletes:
 #create a dual meet between each team created
 try:
     curs.execute("""SELECT (swimapp_team.id, swimapp_team.team_short_name,""" \
-    """ swimapp_facility.id) FROM swimapp_facility JOIN swimapp_team ON""" \
-    """ swimapp_facility.facility_name = swimapp_team.team_short_name || ' Home'""")
+    """ swimapp_facility.id, swimapp_facility.lane_count_1) FROM swimapp_facility""" \
+    """ JOIN swimapp_team ON swimapp_facility.facility_name = swimapp_team.team_short_name""" \
+    """ || ' Home'""")
     tmpTeams = curs.fetchall()
     
     #print "\ttmpTeams: " + str(tmpTeams)
@@ -628,7 +649,8 @@ try:
                 'time_entered' : now,
                 'time_modified' : now,
                 'meet_masters' : False,
-                'meet_type' : ageGroupMeetTypeId
+                'meet_type' : ageGroupMeetTypeId,
+                'lane_count' : hostTeam[3]
             }          
             
             #keep track of number of meets hosted by team to keep them relatively even
@@ -638,10 +660,11 @@ try:
             
             curs.execute("""INSERT INTO swimapp_meet (meet_name, facility_id,""" \
             """ start_date, age_up_date, course_code_1_id, meet_config_id,""" \
-            """ team_id, time_entered, time_modified, meet_masters, meet_type_id)""" \
-            """ VALUES (%(name)s, %(facility_id)s, %(start)s, %(age_up)s,""" \
+            """ team_id, time_entered, time_modified, meet_masters, meet_type_id,""" \
+            """ lane_count) VALUES (%(name)s, %(facility_id)s, %(start)s, %(age_up)s,""" \
             """ %(course_code)s, %(meet_config)s, %(host_id)s, %(time_entered)s,""" \
-            """ %(time_modified)s, %(meet_masters)s, %(meet_type)s) RETURNING id;""", meet)
+            """ %(time_modified)s, %(meet_masters)s, %(meet_type)s, %(lane_count)s)""" \
+            """ RETURNING id;""", meet)
             meetId = curs.fetchone()[0]
             
             meetIds.append(meetId)
@@ -716,78 +739,85 @@ try:
     #print "\tMedley Id: " + str(medleyId)
 
     events = [
-        {'name' : '8U Girls 100Y IM'                , 'number' : 1 , 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 100Y IM'                 , 'number' : 2 , 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 100Y IM'              , 'number' : 3 , 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 100Y IM'               , 'number' : 4 , 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 100Y IM'             , 'number' : 5 , 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 100Y IM'              , 'number' : 6 , 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 200Y IM'             , 'number' : 7 , 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 200Y IM'              , 'number' : 8 , 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 200Y IM'             , 'number' : 9 , 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 200Y IM'              , 'number' : 10, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Girls 25Y Free'               , 'number' : 11, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 25Y Free'                , 'number' : 12, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 25Y Free'             , 'number' : 13, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 25Y Free'              , 'number' : 14, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 50Y Free'            , 'number' : 15, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 50Y Free'             , 'number' : 16, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 50Y Free'            , 'number' : 17, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 50Y Free'             , 'number' : 18, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 50Y Free'            , 'number' : 19, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 50Y Free'             , 'number' : 20, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Girls 100Y Medley Relay'      , 'number' : 21, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 100Y Medley Relay'       , 'number' : 22, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 100Y Medley Relay'    , 'number' : 23, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 100Y Medley Relay'     , 'number' : 24, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 200Y Medley Relay'   , 'number' : 25, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 200Y Medley Relay'    , 'number' : 26, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 200Y Medley Relay'   , 'number' : 27, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 200Y Medley Relay'    , 'number' : 28, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 200Y Medley Relay'   , 'number' : 29, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 200Y Medley Relay'    , 'number' : 30, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Girls 25Y Back'               , 'number' : 31, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 25Y Back'                , 'number' : 32, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 25Y Back'             , 'number' : 33, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 25Y Back'              , 'number' : 34, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 50Y Back'            , 'number' : 35, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 50Y Back'             , 'number' : 36, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 50Y Back'            , 'number' : 37, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 50Y Back'             , 'number' : 38, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 50Y Back'            , 'number' : 39, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 50Y Back'             , 'number' : 40, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Girls 25Y Breast'             , 'number' : 41, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 25Y Breast'              , 'number' : 42, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 25Y Breast'           , 'number' : 43, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 25Y Breast'            , 'number' : 44, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 50Y Breast'          , 'number' : 45, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 50Y Breast'           , 'number' : 46, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 50Y Breast'          , 'number' : 47, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 50Y Breast'           , 'number' : 48, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 50Y Breast'          , 'number' : 49, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 50Y Breast'           , 'number' : 50, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Girls 25Y Fly'                , 'number' : 51, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 25Y Fly'                 , 'number' : 52, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 25Y Fly'              , 'number' : 53, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 25Y Fly'               , 'number' : 54, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 50Y Fly'             , 'number' : 55, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 50Y Fly'              , 'number' : 56, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 50Y Fly'             , 'number' : 57, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 50Y Fly'              , 'number' : 58, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 50Y Fly'             , 'number' : 59, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 50Y Fly'              , 'number' : 60, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Girls 100Y Free Relay'        , 'number' : 61, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '8U Boys 100Y Free Relay'         , 'number' : 62, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Girls 100Y Free Relay'      , 'number' : 63, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '9/10 Boys 100Y Free Relay'       , 'number' : 64, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Girls 200Y Free Relay'     , 'number' : 65, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '11/12 Boys 200Y Free Relay'      , 'number' : 66, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Girls 200Y Free Relay'     , 'number' : 67, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '13/14 Boys 200Y Free Relay'      , 'number' : 68, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Girls 200Y Free Relay'     , 'number' : 69, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
-        {'name' : '15/18 Boys 200Y Free Relay'      , 'number' : 70, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now},
+        {'name' : '8U Girls 100Y IM'                , 'number' : 1 , 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '2:03.74', '1st' : '1:27.22' },
+        {'name' : '8U Boys 100Y IM'                 , 'number' : 2 , 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '2:02.50', '1st' : '1:31.11' },
+        {'name' : '9/10 Girls 100Y IM'              , 'number' : 3 , 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '1:31.69', '1st' : '1:17.31' },
+        {'name' : '9/10 Boys 100Y IM'               , 'number' : 4 , 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '1:41.14', '1st' : '1:12.78' },
+        {'name' : '11/12 Girls 100Y IM'             , 'number' : 5 , 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '1:22.05', '1st' : '1:04.36' },
+        {'name' : '11/12 Boys 100Y IM'              , 'number' : 6 , 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '1:19.40', '1st' : '1:03.64' },
+        {'name' : '13/14 Girls 200Y IM'             , 'number' : 7 , 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '2:38.80', '1st' : '2:12.52' },
+        {'name' : '13/14 Boys 200Y IM'              , 'number' : 8 , 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '2:50.60', '1st' : '2:06.07' },
+        {'name' : '15/18 Girls 200Y IM'             , 'number' : 9 , 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '2:27.59', '1st' : '2:06.60' },
+        {'name' : '15/18 Boys 200Y IM'              , 'number' : 10, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '2:10.75', '1st' : '1:55.90' },
+        
+        {'name' : '8U Girls 25Y Free'               , 'number' : 11, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '19.09', '1st' : '16.32' },
+        {'name' : '8U Boys 25Y Free'                , 'number' : 12, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '17.75', '1st' : '14.89' },
+        {'name' : '9/10 Girls 25Y Free'             , 'number' : 13, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '15.45', '1st' : '13.05' },
+        {'name' : '9/10 Boys 25Y Free'              , 'number' : 14, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '16.28', '1st' : '13.34' },
+        {'name' : '11/12 Girls 50Y Free'            , 'number' : 15, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '29.32', '1st' : '24.95' },
+        {'name' : '11/12 Boys 50Y Free'             , 'number' : 16, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '30.22', '1st' : '25.55' },
+        {'name' : '13/14 Girls 50Y Free'            , 'number' : 17, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '28.20', '1st' : '24.61' },
+        {'name' : '13/14 Boys 50Y Free'             , 'number' : 18, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '25.89', '1st' : '21.93' },
+        {'name' : '15/18 Girls 50Y Free'            , 'number' : 19, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '26.85', '1st' : '23.22' },
+        {'name' : '15/18 Boys 50Y Free'             , 'number' : 20, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '21.17', '1st' : '22.84' },
+        
+        {'name' : '8U Girls 100Y Medley Relay'      , 'number' : 21, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:43.03', '1st' : '1:17.67' },
+        {'name' : '8U Boys 100Y Medley Relay'       , 'number' : 22, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:45.15', '1st' : '1:18.68' },
+        {'name' : '9/10 Girls 100Y Medley Relay'    , 'number' : 23, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:21.33', '1st' : '1:03.51' },
+        {'name' : '9/10 Boys 100Y Medley Relay'     , 'number' : 24, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:22.71', '1st' : '1:07.47' },
+        {'name' : '11/12 Girls 200Y Medley Relay'   , 'number' : 25, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:33.61', '1st' : '2:06.12' },
+        {'name' : '11/12 Boys 200Y Medley Relay'    , 'number' : 26, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:33.78', '1st' : '2:01.45' },
+        {'name' : '13/14 Girls 200Y Medley Relay'   , 'number' : 27, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:24.54', '1st' : '1:53.14' },
+        {'name' : '13/14 Boys 200Y Medley Relay'    , 'number' : 28, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:36.03', '1st' : '1:49.04' },
+        {'name' : '15/18 Girls 200Y Medley Relay'   , 'number' : 29, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:04.58', '1st' : '1:50.24' },
+        {'name' : '15/18 Boys 200Y Medley Relay'    , 'number' : 30, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : medleyId, 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:58.36', '1st' : '1:34.64' },
+        
+        {'name' : '8U Girls 25Y Back'               , 'number' : 31, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '24.96', '1st' : '18.72' },
+        {'name' : '8U Boys 25Y Back'                , 'number' : 32, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '24.06', '1st' : '18.38' },
+        {'name' : '9/10 Girls 25Y Back'             , 'number' : 33, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '19.77', '1st' : '16.60' },
+        {'name' : '9/10 Boys 25Y Back'              , 'number' : 34, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '21.07', '1st' : '15.86' },
+        {'name' : '11/12 Girls 50Y Back'            , 'number' : 35, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '35.48', '1st' : '28.43' },
+        {'name' : '11/12 Boys 50Y Back'             , 'number' : 36, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '38.14', '1st' : '31.83' },
+        {'name' : '13/14 Girls 50Y Back'            , 'number' : 37, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '34.64', '1st' : '28.34' },
+        {'name' : '13/14 Boys 50Y Back'             , 'number' : 38, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '31.84', '1st' : '26.49' },
+        {'name' : '15/18 Girls 50Y Back'            , 'number' : 39, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '30.79', '1st' : '25.94' },
+        {'name' : '15/18 Boys 50Y Back'             , 'number' : 40, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : backId  , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '28.12', '1st' : '24.23' },
+        
+        {'name' : '8U Girls 25Y Breast'             , 'number' : 41, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '26.79', '1st' : '21.33' },
+        {'name' : '8U Boys 25Y Breast'              , 'number' : 42, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '25.97', '1st' : '19.79' },
+        {'name' : '9/10 Girls 25Y Breast'           , 'number' : 43, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '21.28', '1st' : '17.50' },
+        {'name' : '9/10 Boys 25Y Breast'            , 'number' : 44, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '21.71', '1st' : '18.57' },
+        {'name' : '11/12 Girls 50Y Breast'          , 'number' : 45, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '40.94', '1st' : '34.08' },
+        {'name' : '11/12 Boys 50Y Breast'           , 'number' : 46, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '39.85', '1st' : '32.10' },
+        {'name' : '13/14 Girls 50Y Breast'          , 'number' : 47, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '37.58', '1st' : '31.07' },
+        {'name' : '13/14 Boys 50Y Breast'           , 'number' : 48, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '34.56', '1st' : '28.46' },
+        {'name' : '15/18 Girls 50Y Breast'          , 'number' : 49, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '34.69', '1st' : '30.08' },
+        {'name' : '15/18 Boys 50Y Breast'           , 'number' : 50, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : breastId, 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '30.11', '1st' : '27.06' },
+        
+        {'name' : '8U Girls 25Y Fly'                , 'number' : 51, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '22.63', '1st' : '16.82' },
+        {'name' : '8U Boys 25Y Fly'                 , 'number' : 52, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '25.76', '1st' : '18.00' },
+        {'name' : '9/10 Girls 25Y Fly'              , 'number' : 53, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '17.57', '1st' : '14.55' },
+        {'name' : '9/10 Boys 25Y Fly'               , 'number' : 54, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 25 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '19.14', '1st' : '14.39' },
+        {'name' : '11/12 Girls 50Y Fly'             , 'number' : 55, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '34.12', '1st' : '27.01' },
+        {'name' : '11/12 Boys 50Y Fly'              , 'number' : 56, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '36.80', '1st' : '28.20' },
+        {'name' : '13/14 Girls 50Y Fly'             , 'number' : 57, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '30.83', '1st' : '26.68' },
+        {'name' : '13/14 Boys 50Y Fly'              , 'number' : 58, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '29.88', '1st' : '25.03' },
+        {'name' : '15/18 Girls 50Y Fly'             , 'number' : 59, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '29.06', '1st' : '26.02' },
+        {'name' : '15/18 Boys 50Y Fly'              , 'number' : 60, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : flyId   , 'distance' : 50 , 'units' : 'Y', 'isRelay' : False, 'timeEntered' : now, 'timeModified' : now, '16th' : '25.57', '1st' : '22.39' },
+        
+        {'name' : '8U Girls 100Y Free Relay'        , 'number' : 61, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:26.96', '1st' : '1:08.24' },
+        {'name' : '8U Boys 100Y Free Relay'         , 'number' : 62, 'lowerAge' : 0 , 'upperAge' : 8 , 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:31.05', '1st' : '1:08.91' },
+        {'name' : '9/10 Girls 100Y Free Relay'      , 'number' : 63, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:09.08', '1st' : '55.72' },
+        {'name' : '9/10 Boys 100Y Free Relay'       , 'number' : 64, 'lowerAge' : 9 , 'upperAge' : 10, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 100, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:11.00', '1st' : '1:00.52' },
+        {'name' : '11/12 Girls 200Y Free Relay'     , 'number' : 65, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:15.54', '1st' : '1:50.84' },
+        {'name' : '11/12 Boys 200Y Free Relay'      , 'number' : 66, 'lowerAge' : 11, 'upperAge' : 12, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:15.42', '1st' : '1:55.20' },
+        {'name' : '13/14 Girls 200Y Free Relay'     , 'number' : 67, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '2:01.38', '1st' : '1:42.57' },
+        {'name' : '13/14 Boys 200Y Free Relay'      , 'number' : 68, 'lowerAge' : 13, 'upperAge' : 14, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:55.24', '1st' : '1:32.83' },
+        {'name' : '15/18 Girls 200Y Free Relay'     , 'number' : 69, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'F', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:51.58', '1st' : '1:37.89' },
+        {'name' : '15/18 Boys 200Y Free Relay'      , 'number' : 70, 'lowerAge' : 15, 'upperAge' : 18, 'gender' : 'M', 'strokeId' : freeId  , 'distance' : 200, 'units' : 'Y', 'isRelay' : True , 'timeEntered' : now, 'timeModified' : now, '16th' : '1:41.06', '1st' : '1:26.81' },
     ]
     
+    eventProxyTimes = {}
     meetOnes = np.ones(len(meetIds), dtype=int)
     for event in events:
         curs.execute("""INSERT INTO swimapp_event (event_name, lower_age,""" \
@@ -797,6 +827,13 @@ try:
         """ %(isRelay)s, %(timeEntered)s, %(timeModified)s) RETURNING id;""",
         event)
         eventId = curs.fetchone()[0]
+        
+        #use GKIASA City Meet data as proxy for average and std
+        avgTime = timeFromStr(event['16th'])
+        bestTime = timeFromStr(event['1st'])
+        sigma = (avgTime - bestTime)/ 3.0
+        eventProxyTime = {'avg' : avgTime, 'sigma' : sigma, 'entryCount' : 0}
+        eventProxyTimes[eventId] = eventProxyTime
         
         data = zip(eventId * meetOnes, event['number'] * meetOnes, meetIds)
         curs.executemany("""INSERT INTO swimapp_meetevent (event_id, event_number,""" \
@@ -842,6 +879,7 @@ print "Events complete"
 #   meetevent_id        (int, not null)
 #   time_entered        (timestamp, not null)
 #   time_modified       (timestamp, not null)
+#   override_order      (int, nullable)
 
 #========================================
 #Athlete Entries
@@ -859,6 +897,9 @@ ageGroups = [(0,8), (9,10), (11,12), (13,14), (15,18)]
 genders = ['M','F']
 strokeIds = [freeId, backId, breastId, flyId, medleyId]
 
+#make a weighted list for seed time, ordered overide, both, and none
+weightedEntryType = ['seed', 'seed', 'seed', 'seed', 'seed', 'seed', 'seed', 'order', 'both', 'none']
+
 #iterate through meets
 for meetId in meetIds:
     print "\tMeet Id: " + str(meetId)
@@ -871,6 +912,10 @@ for meetId in meetIds:
     meetTeamIds = curs.fetchall()
     
     for meetTeamId in meetTeamIds:
+        teamAthleteCount = 0
+        teamEntryCount = 0
+        teamAthleteEntryCount = 0        
+        
         print "\t\tTeam Id: " + str(meetTeamId[0])
         #iterate through athletes in a given team, randomly assign 2 individual events and 2 relays where possible
         
@@ -891,7 +936,7 @@ for meetId in meetIds:
                 (meetTeamId[0], lowerAgeGroupDate, upperAgeGroupDate, gender))
                 ageGroupAthletes = curs.fetchall()
                 
-                print "Age group athlete count: " + str(len(ageGroupAthletes))
+                print "\t\t\t\tAge group athlete count: " + str(len(ageGroupAthletes))
                 
                 maxNumRelay = int(np.floor(len(ageGroupAthletes)/4))
                 freeRelayAthletes = random.sample(ageGroupAthletes, maxNumRelay*4)
@@ -899,7 +944,8 @@ for meetId in meetIds:
                 
                 #enter individual events
                 for ageGroupAthlete in ageGroupAthletes:
-                    print "Age group athlete id: " + str(ageGroupAthlete)
+                    teamAthleteCount += 1
+                    #print "Age group athlete id: " + str(ageGroupAthlete)
                     
                     #check if this athlete is in a free relay
                     try:
@@ -924,25 +970,44 @@ for meetId in meetIds:
                     
                     individualStrokeIds = random.sample(strokeIds, numIndividualEvents)
                     for individualStrokeId in individualStrokeIds:
-                        print "Individual event id: " + str(individualStrokeId)
+                        teamEntryCount += 1
+                        teamAthleteEntryCount += 1
+                        #print "Individual event id: " + str(individualStrokeId)
                         
                         #get event_id (needs to be changed to meetevent_id)
-                        curs.execute("""SELECT swimapp_meetevent.id FROM""" \
-                        """ swimapp_meetevent JOIN swimapp_event ON""" \
+                        curs.execute("""SELECT swimapp_meetevent.id, swimapp_meetevent.event_id""" \
+                        """ FROM swimapp_meetevent JOIN swimapp_event ON""" \
                         """ swimapp_meetevent.event_id = swimapp_event.id WHERE""" \
                         """ (lower_age = %s) AND (upper_age = %s) AND""" \
-                        """ (gender = %s) AND (stroke_id = %s) AND (is_relay = %s);""",
-                        (ageGroup[0], ageGroup[1], gender, individualStrokeId, False))
-                        meeteventId = curs.fetchone()[0]
+                        """ (gender = %s) AND (stroke_id = %s) AND """ \
+                        """ (is_relay = %s) AND (meet_id = %s);""",
+                        (ageGroup[0], ageGroup[1], gender, individualStrokeId, False, meetId))
+                        meetEventId, eventId = curs.fetchone()
                         
-                        print "MeetEvent id: " + str(meeteventId)
+                        #print "MeetEvent id: " + str(meeteventId)
+                        
+                        #create a seed time
+                        eventProxyTime = eventProxyTimes[eventId]
+                        eventProxyTime['entryCount'] += 1
+                        seedTime = None
+                        order = None
+                        entryType = random.choice(weightedEntryType)
+                        
+                        if entryType == 'seed':
+                            seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
+                        elif entryType == 'order':
+                            order = eventProxyTime['entryCount'] #use count to ensure uniqueness
+                        elif entryType == 'both':
+                            seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
+                            order = eventProxyTime['entryCount'] #use count to ensure uniqueness
                         
                         curs.execute("""INSERT INTO swimapp_entry (meetevent_id,""" \
-                        """ time_entered, time_modified) VALUES (%s,%s,%s)""" \
-                        """ RETURNING id;""", (meeteventId, now, now))
+                        """ time_entered, time_modified, seed_time, override_order)""" \
+                        """ VALUES (%s,%s,%s,%s,%s) RETURNING id;""",
+                        (meetEventId, now, now, seedTime, order))
                         entryId = curs.fetchone()[0]
                         
-                        print "Entry id: " + str(entryId)
+                        #print "Entry id: " + str(entryId)
                         
                         curs.execute("""INSERT INTO swimapp_athleteentry""" \
                         """ (athlete_id, entry_id, athlete_order) VALUES (%s,%s,%s);""",
@@ -951,44 +1016,86 @@ for meetId in meetIds:
                 #enter relay events
                 
                 #get free relay event id
-                curs.execute("""SELECT swimapp_meetevent.id FROM swimapp_meetevent""" \
-                """ JOIN swimapp_event ON swimapp_meetevent.event_id = swimapp_event.id""" \
-                """ WHERE (lower_age = %s) AND (upper_age = %s) AND (gender = %s)""" \
-                """ AND (stroke_id = %s) AND (is_relay = %s);""", (ageGroup[0], ageGroup[1], gender, freeId, True))
-                freeRelayMeetEventId = curs.fetchone()[0]                
+                curs.execute("""SELECT swimapp_meetevent.id, swimapp_meetevent.event_id""" \
+                """ FROM swimapp_meetevent JOIN swimapp_event ON swimapp_meetevent.event_id""" \
+                """ = swimapp_event.id WHERE (lower_age = %s) AND (upper_age = %s)""" \
+                """ AND (gender = %s) AND (stroke_id = %s) AND (is_relay = %s) AND (meet_id = %s);""",
+                (ageGroup[0], ageGroup[1], gender, freeId, True, meetId))
+                freeRelayMeetEventId, freeRelayEventId = curs.fetchone()                
                 
                 for i in range(maxNumRelay):
+                    teamEntryCount += 1
                     freeRelay = freeRelayAthletes[i:i+4]
                     
+                    #create a seed time
+                    eventProxyTime = eventProxyTimes[freeRelayEventId]
+                    eventProxyTime['entryCount'] += 1
+                    seedTime = None
+                    order = None
+                    entryType = random.choice(weightedEntryType)
+                    
+                    if entryType == 'seed':
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
+                    elif entryType == 'order':
+                        order = eventProxyTime['entryCount'] #use count to ensure uniqueness
+                    elif entryType == 'both':
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
+                        order = eventProxyTime['entryCount'] #use count to ensure uniqueness
+                    
                     curs.execute("""INSERT INTO swimapp_entry (meetevent_id,""" \
-                    """ time_entered, time_modified) VALUES (%s,%s,%s)""" \
-                    """ RETURNING id;""", (freeRelayMeetEventId, now, now))
+                    """ time_entered, time_modified, seed_time, override_order)""" \
+                    """ VALUES (%s,%s,%s,%s,%s) RETURNING id;""",
+                    (freeRelayMeetEventId, now, now, seedTime, order))
                     freeRelayEntryId = curs.fetchone()[0]
                     
                     for j in range(4):
+                        teamAthleteEntryCount += 1
                         curs.execute("""INSERT INTO swimapp_athleteentry""" \
                         """ (athlete_id, entry_id, athlete_order) VALUES (%s,%s,%s);""",
                         (freeRelay[j][0], freeRelayEntryId, j))
                 
                 #get medley relay event id
-                curs.execute("""SELECT swimapp_meetevent.id FROM swimapp_meetevent""" \
-                """ JOIN swimapp_event ON swimapp_meetevent.event_id = swimapp_event.id""" \
-                """ WHERE (lower_age = %s) AND (upper_age = %s) AND (gender = %s)""" \
-                """ AND (stroke_id = %s) AND (is_relay = %s);""", (ageGroup[0], ageGroup[1], gender, medleyId, True))
-                medleyRelayMeetEventId = curs.fetchone()[0]                
+                curs.execute("""SELECT swimapp_meetevent.id, swimapp_meetevent.event_id""" \
+                """ FROM swimapp_meetevent JOIN swimapp_event ON swimapp_meetevent.event_id""" \
+                """ = swimapp_event.id WHERE (lower_age = %s) AND (upper_age = %s)""" \
+                """ AND (gender = %s) AND (stroke_id = %s) AND (is_relay = %s) AND (meet_id = %s);""",
+                (ageGroup[0], ageGroup[1], gender, medleyId, True, meetId))
+                medleyRelayMeetEventId, medleyRelayEventId = curs.fetchone()               
                 
                 for i in range(maxNumRelay):
+                    teamEntryCount += 1
                     medleyRelay = medleyRelayAthletes[i:i+4]
                     
+                    #create a seed time
+                    eventProxyTime = eventProxyTimes[medleyRelayEventId]
+                    eventProxyTime['entryCount'] += 1
+                    seedTime = None
+                    order = None
+                    entryType = random.choice(weightedEntryType)
+                    
+                    if entryType == 'seed':
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
+                    elif entryType == 'order':
+                        order = eventProxyTime['entryCount'] #use count to ensure uniqueness
+                    elif entryType == 'both':
+                        seedTime = random.gauss(eventProxyTime['avg'], eventProxyTime['sigma'])
+                        order = eventProxyTime['entryCount'] #use count to ensure uniqueness
+                    
                     curs.execute("""INSERT INTO swimapp_entry (meetevent_id,""" \
-                    """ time_entered, time_modified) VALUES (%s,%s,%s)""" \
-                    """ RETURNING id;""", (medleyRelayMeetEventId, now, now))
+                    """ time_entered, time_modified, seed_time, override_order)""" \
+                    """ VALUES (%s,%s,%s,%s,%s) RETURNING id;""",
+                    (medleyRelayMeetEventId, now, now, seedTime, order))
                     medleyRelayEntryId = curs.fetchone()[0]
                     
                     for j in range(4):
+                        teamAthleteEntryCount += 1
                         curs.execute("""INSERT INTO swimapp_athleteentry""" \
                         """ (athlete_id, entry_id, athlete_order) VALUES (%s,%s,%s);""", \
                         (medleyRelay[j][0], medleyRelayEntryId, j))
+        
+        print "\t\tTeam athlete count: " + str(teamAthleteCount)
+        print "\t\tTeam entry count: " + str(teamEntryCount)
+        print "\t\tTeam entry athlete count: " + str(teamAthleteEntryCount)
 
 conn.commit()
 conn.close()
