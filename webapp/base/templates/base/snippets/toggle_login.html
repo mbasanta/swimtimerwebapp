@@ -4,7 +4,7 @@
   <li class="dropdown">
     <a class="dropdown-toggle" id="dropuser" data-toggle="dropdown"
       href="#">{{ user.email }} <b class="caret"></b></a>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropuser">
+    <ul class="dropdown-menu" id="logoutuser" role="menu" aria-labelledby="dropuser">
       <li><a href="{% url "swimapp_logout" %}">Logout</a></li>
     </ul>
   </li>
