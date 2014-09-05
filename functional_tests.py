@@ -54,6 +54,10 @@ class NewVisitorTest(unittest.TestCase):
             any(self.config['username'] in nav.text for nav in navbars)
         )
 
+    def test_user_can_add_team(self):
+        '''test that user can add team successfully'''
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
