@@ -31,6 +31,13 @@
   {% compress css %}
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   {% block css %}{% endblock %}
+  <style>
+  /* Move down content because we have a fixed navbar that is 50px tall */
+  body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+  }
+  </style>
   {% endcompress %}
   <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
 
@@ -53,6 +60,9 @@
   </header>
 
   <div role="main">
+    {% block navbar %}
+      {% include "base/snippets/navbar.html" %}
+    {% endblock %}
     {% block content %}{% endblock %}
   </div>
 
