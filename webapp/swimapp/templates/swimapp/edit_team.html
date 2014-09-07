@@ -2,7 +2,7 @@
 
 {% load crispy_forms_tags %}
 
-{% block title %}
+{% block page_title %}
   {% if team == None %}
     New Team
   {% else %}
@@ -11,12 +11,27 @@
 {% endblock %}
 
 {% block content %}
-  <div class="well col-md-6">
-    <p>Fill form to create new team.</p>
-    <form action="" method="post">
-      {% csrf_token %}
-      {{ form|crispy }}
-      <button type="submit">Submit</button>
-    </form>
+  <div class="jumbotron">
+    <div class="container">
+      {% if team == None %}
+        <h1>New Team</h1>
+        <p>Enter information for your new team below</p>
+      {% else %}
+        <h1>Edit Team</h1>
+        <p>Edit the team as required below</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+        <form action="" method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
   </div>
 {% endblock %}
