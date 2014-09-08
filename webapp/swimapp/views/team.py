@@ -1,9 +1,17 @@
-"""Views for the swimapp"""
+"""Team views for the swimapp"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from .models import Team
-from .forms import TeamForm
+from swimapp.models import Team
+from swimapp.forms.team import TeamForm
+# pylint: disable=E1123
+#   Unexpected constructor argument
+# pylint: disable=E1120
+#   No argument X in constructor
+# pylint: disable=E1101
+#   Instace of X has no memeber X
+# pylint: disable=C0103
+#   Invalid argument name X
 
 
 @login_required
