@@ -24,14 +24,6 @@
   </div>
 
   <div class="container">
-    <div class="row">
-      <div class="col-md-8">
-        <form action="" method="post">
-          {% csrf_token %}
-          {{ form|crispy }}
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-    </div>
+    {% crispy form form.helper %}
   </div>
 {% endblock %}

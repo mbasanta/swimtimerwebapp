@@ -2,6 +2,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from swimapp.models import Team
 from swimapp.forms.team import TeamForm
 # pylint: disable=E1123
@@ -12,6 +14,34 @@ from swimapp.forms.team import TeamForm
 #   Instace of X has no memeber X
 # pylint: disable=C0103
 #   Invalid argument name X
+
+
+class TeamList(ListView):
+    model = Team
+    template_name = "swimapp/team_list.html"
+
+
+class TeamView(DetailView):
+    model = Team
+    template_name = "swimapp/view_team.html"
+
+
+class TeamCreate(CreateView):
+    model = Team
+    template_name = "swimapp/edit_team.html"
+    form_class = TeamForm
+    success_url = reverse_lazy('swimapp_team_list')
+
+    def form_valid(self, form):
+        form.instance.addr_country = 'USA'
+        return super(TeamCreate, self).form_valid(form)
+
+
+class TeamUpdate(UpdateView):
+    model = Team
+    template_name = "swimapp/edit_team.html"
+    form_class = TeamForm
+    success_url = reverse_lazy('swimapp_team_list')
 
 
 @login_required
