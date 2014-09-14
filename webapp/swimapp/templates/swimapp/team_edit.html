@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+  {% if team == None %}
+    New Team
+  {% else %}
+    Edit Team
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <div class="container">
+      {% if team == None %}
+        <h1>New Team</h1>
+        <p>Enter information for your new team below</p>
+      {% else %}
+        <h1>Edit Team</h1>
+        <p>Edit the team as required below</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="container">
+    {% crispy form form.helper %}
+  </div>
+{% endblock %}

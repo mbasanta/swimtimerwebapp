@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+    Teams
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <div class="container">
+      <h1>Teams</h1>
+      <p>List of teams</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <ul>
+      {% for team in object_list %}
+        <li><a href="{{ team.id }}">{{ team.team_name }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
