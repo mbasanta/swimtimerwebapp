@@ -1,23 +1,20 @@
-"""Team views for the swimapp"""
+'''Team views for the swimapp'''
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from swimapp.models import Team
 from swimapp.forms.team import TeamForm
-# pylint: disable=E1123
-#   Unexpected constructor argument
-# pylint: disable=E1120
-#   No argument X in constructor
-# pylint: disable=E1101
-#   Instace of X has no memeber X
-# pylint: disable=C0103
-#   Invalid argument name X
+# pylint: disable=R0901
+#   Too many acessestors
+# pylint: disable=R0904
+#   Too many public methods
 
 
 class TeamList(ListView):
+    '''List teams view'''
     model = Team
-    template_name = "swimapp/team_list.html"
+    template_name = 'swimapp/team_list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -25,13 +22,19 @@ class TeamList(ListView):
 
 
 class TeamView(DetailView):
+    '''Team view'''
     model = Team
-    template_name = "swimapp/team_view.html"
+    template_name = 'swimapp/team_view.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TeamView, self).dispatch(*args, **kwargs)
 
 
 class TeamCreate(CreateView):
+    '''Team create view'''
     model = Team
-    template_name = "swimapp/team_edit.html"
+    template_name = 'swimapp/team_edit.html'
     form_class = TeamForm
     success_url = reverse_lazy('swimapp_team_list')
 
@@ -39,9 +42,18 @@ class TeamCreate(CreateView):
         form.instance.addr_country = 'USA'
         return super(TeamCreate, self).form_valid(form)
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TeamCreate, self).dispatch(*args, **kwargs)
+
 
 class TeamUpdate(UpdateView):
+    '''Team update view'''
     model = Team
-    template_name = "swimapp/team_edit.html"
+    template_name = 'swimapp/team_edit.html'
     form_class = TeamForm
     success_url = reverse_lazy('swimapp_team_list')
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TeamUpdate, self).dispatch(*args, **kwargs)
