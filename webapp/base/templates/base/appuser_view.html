@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+
+{% block page_title %}
+    {{ user.get_full_name }}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>{{ user.get_full_name }}</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <dl class="dl-horizontal">
+        <dt>Email</dt>
+        <dd><p>{{ user.email }}</p></dd>
+        <dt>Date Joined</dt>
+        <dd><p>{{ user.date_joined|date:"F jS Y" }}</p></dd>
+        <dt>Active</dt>
+        <dd><p>{{ user.is_active }}</p></dd>
+      </dl>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <a href="edit/" class="btn btn-primary">Edit</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

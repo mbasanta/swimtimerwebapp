@@ -2,7 +2,9 @@
 from django import forms
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-from .models import AppUser
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from base.models import AppUser
 
 
 class UserCreationForm(forms.ModelForm):
@@ -11,6 +13,17 @@ class UserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation',
                                 widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        '''AppUser Form Constructor'''
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'user_form'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-2'
+        self.helper.field_class = 'col-md-6'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
         model = AppUser
@@ -39,6 +52,17 @@ class UserChangeForm(forms.ModelForm):
     password hash display field.
     """
     password = ReadOnlyPasswordHashField()
+
+    def __init__(self, *args, **kwargs):
+        '''AppUser Form Constructor'''
+        super(UserChangeForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'user_form'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-2'
+        self.helper.field_class = 'col-md-6'
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Submit'))
 
     class Meta:
         model = AppUser
