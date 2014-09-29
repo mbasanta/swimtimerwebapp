@@ -3,6 +3,7 @@ import random
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+from swimapp.models.team import Team
 
 
 class DashboardView(TemplateView):
@@ -16,4 +17,6 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         context['random_number'] = random.randrange(1, 100)
+        context['teams'] = Team.objects.filter(users=self.request.user) \
+            .select_related('team_reg', 'team_type')
         return context

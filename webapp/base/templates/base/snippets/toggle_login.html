@@ -5,6 +5,7 @@
     <a class="dropdown-toggle" id="dropuser" data-toggle="dropdown"
       href="#">{{ user.email }} <b class="caret"></b></a>
     <ul class="dropdown-menu" id="usermenu" role="menu" aria-labelledby="dropuser">
+      <li><a href="{% url "swimapp_user_dashboard" %}">Dashboard</a></li>
       <li><a href="{% url "base_appuser_view" user.id %}">Profile</a></li>
       <li><a href="{% url "swimapp_logout" %}">Logout</a></li>
     </ul>

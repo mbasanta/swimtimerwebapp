@@ -40,12 +40,30 @@
         </div>
       </div>
     </div>
-    <div class="tab-pane" id="tab-teams">Teams</div>
+
+    <div class="tab-pane" id="tab-teams">
+      <div class="row">
+        <div class="col-md-8">
+          <h3>My Teams</h3>
+          {% for team in teams %}
+            <h4>{{ team }}</h4>
+            <dl class="dl-horizontal">
+              <dt>Team Type</dt>
+              <dd><p>{{ team.team_type.type_name }}</p></dd>
+              <dt>Team Registration</dt>
+              <dd><p>{{ team.team_reg.type_name }}</p></dd>
+              <dt></dt>
+              <dd><a href="#">Team Info</a><dd>
+            </dl>
+            <hr />
+          {% empty %}
+            <p>No teams found</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
     <div class="tab-pane" id="tab-other">Other</div>
   </div>
 </div>
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'js/user_dashboard.js' %}"></script>
-{% endblock js %}
