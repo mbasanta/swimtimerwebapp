@@ -15,3 +15,4 @@ from athlete_entry import (AthleteEntry, AthleteEntryInline,
                            AthleteEntryManager, AthleteEntryAdmin)
 from entry import Entry, EntryAdmin, EntryManager
 from facility import Facility, FacilityManager
+from fileupload import FileUpload, FileUploadManager
