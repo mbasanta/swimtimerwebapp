@@ -29,6 +29,16 @@ class FileUploadView(TemplateView):
         return context
 
 
+class FileUploadList(ListView):
+    '''List file upload view'''
+    model = FileUpload
+    template_name = 'swimapp/file_upload_list.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FileUploadList, self).dispatch(*args, **kwargs)
+
+
 class FileUploadCreate(CreateView):
     '''File upload create view'''
     model = FileUpload
