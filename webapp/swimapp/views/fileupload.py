@@ -2,6 +2,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.views.generic import TemplateView
 from swimapp.forms.fileupload import FileUploadForm
@@ -49,6 +50,27 @@ class FileUploadCreate(CreateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FileUploadCreate, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        """
+        If the form is valid, save the associated model.
+        """
+        self.object = form.save()
+        self.object.process()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class FileUploadUpdate(UpdateView):
