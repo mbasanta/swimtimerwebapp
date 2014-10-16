@@ -1,8 +1,10 @@
 '''Classes related to Team'''
+from datetime import datetime
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from swimapp.models.choices_constants import FILE_UPLOAD_CHOICES
+from hy3parser.hy3Parser import Hy3Parser
 
 
 class FileUploadManager(models.Manager):  # pylint: disable=R0904
@@ -22,7 +24,21 @@ class FileUploadManager(models.Manager):  # pylint: disable=R0904
 class FileUpload(models.Model):
     '''Uploaded File'''
     # pylint: disable=C0330
+    # pylint: disable=W0703
+    #   Too general an exception
+
+    PENDING, PROCESSED, FAILED = 'Pending', 'Processed', 'Failed'
+    STATUSES = (
+        (PENDING, PENDING),
+        (PROCESSED, PROCESSED),
+        (FAILED, FAILED)
+    )
+
     filename = models.CharField(max_length=100)
+    status = models.CharField(max_length=30, choices=STATUSES, default=PENDING)
+    processing_description = models.TextField(blank=True, null=True)
+    time_start_processing = models.DateTimeField(blank=True, null=True)
+    time_end_processing = models.DateTimeField(blank=True, null=True)
     filetype = models.CharField(
         max_length=25,
         choices=FILE_UPLOAD_CHOICES)
@@ -41,3 +57,33 @@ class FileUpload(models.Model):
 
     def __unicode__(self):
         return self.filename
+
+    def process(self):
+        '''Process the uploaded file, only hy3 files right now'''
+        self.time_start_processing = datetime.now()
+        try:
+            Hy3Parser.parse_file(self.docfile.path)
+        except Exception, error:
+            self._mark_failed(unicode(error))
+        else:
+            self._mark_processed()
+
+    def _mark_processed(self, description=None):
+        '''protected method that sets end time and marks file as processed'''
+        self.status = self.PROCESSED
+        self.time_end_processing = datetime.now()
+        self.processing_description = description
+        self.save()
+
+    def _mark_failed(self, description):
+        '''
+        protected method marks file and complete and sets processing
+        desciption
+        '''
+        self.status = self.FAILED
+        self.processing_description = description
+        self.save()
+
+    def was_processing_successful(self):
+        '''checks the status of file processing'''
+        return self.status == self.PROCESSED
