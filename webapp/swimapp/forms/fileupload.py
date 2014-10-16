@@ -28,4 +28,5 @@ class FileUploadForm(ModelForm):
     class Meta:
         '''Django meta info'''
         model = FileUpload
-        #exclude = ("addr_country", "fax")
+        exclude = ('status', 'processing_description',
+                   'time_start_processing', 'time_end_processing')
