@@ -1,18 +1,10 @@
 from __future__ import absolute_import
 
 from celery import shared_task
-
-
-@shared_task(name='swimapp.tasks.add')
-def add(x, y):
-    return x + y
+from swimapp.models.fileupload import FileUpload
 
 
 @shared_task
-def mul(x, y):
-    return x * y
-
-
-@shared_task
-def xsum(numbers):
-    return sum(numbers)
+def process_hy3_upload(file_id):
+    hy3file = FileUpload.objects.get(id=file_id)
+    hy3file.process()
