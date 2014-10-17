@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+  File Upload
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <div class="container">
+        <h1>File Upload</h1>
+        <p>Upload the file</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      {% if documents %}
+        <ul>
+        {% for document in documents %}
+          <li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
+        {% endfor %}
+        </ul>
+      {% else %}
+        <p>No documents.</p>
+      {% endif %}
+    </div>
+    <div class="row">
+      {% crispy form form.helper %}
+    </div>
+  </div>
+{% endblock %}
