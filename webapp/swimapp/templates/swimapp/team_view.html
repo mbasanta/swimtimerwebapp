@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+
+{% block page_title %}
+    {{ team.team_short_name }}
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>{{ team.team_name }}</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <dl class="dl-horizontal">
+        <dt>Team Type</dt>
+        <dd><p>{{ team.team_type.type_name }}</p></dd>
+        <dt>Team Registration</dt>
+        <dd><p>{{ team.team_reg.type_name }}</p></dd>
+        <dt>Address</dt>
+        <dd>
+          <address>
+            {{ team.addr_name }}<br />
+            {{ team.addr }}<br />
+            {{ team.addr_city }}, {{ team.addr_state }} {{ team.addr_zip }}<br />
+          </address>
+        </dd>
+        <dt>Daytime Phone</dt>
+        <dd>{{ team.daytime_phone|default:"None" }}</dd>
+        <dt>Evening Phone</dt>
+        <dd>{{ team.evening_phone|default:"None" }}</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <a href="edit/" class="btn btn-primary">Edit</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

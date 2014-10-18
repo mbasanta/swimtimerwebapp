@@ -17,3 +17,6 @@ settings.yml
 
 # sensitive data
 testing.cfg
+
+# redis stuff
+*.rdb

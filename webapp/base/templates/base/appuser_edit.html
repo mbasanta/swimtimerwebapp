@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+  {% if user == None %}
+    New User
+  {% else %}
+    Edit User
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <div class="container">
+      {% if user == None %}
+        <h1>New User</h1>
+        <p>Enter information for your new user below</p>
+      {% else %}
+        <h1>Edit User</h1>
+        <p>Edit the user as required below</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="container">
+    {% crispy form form.helper %}
+  </div>
+{% endblock %}

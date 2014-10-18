@@ -1,0 +1,29 @@
+{% extends "base/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+  {% if file_upload == None %}
+    New File
+  {% else %}
+    Edit File
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="jumbotron">
+    <div class="container">
+      {% if file_upload == None %}
+        <h1>New File</h1>
+        <p>Enter information for your new file below</p>
+      {% else %}
+        <h1>Edit File</h1>
+        <p>Edit the file as required below</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="container">
+    {% crispy form form.helper %}
+  </div>
+{% endblock %}
