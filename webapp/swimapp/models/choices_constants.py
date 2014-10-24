@@ -12,8 +12,3 @@ GENDER_CHOICES = (
     (_MALE, 'Male'),
     (_FEMALE, 'Female'),
 )
-
-_HY3_FILE = 'hy3_file'
-FILE_UPLOAD_CHOICES = (
-    (_HY3_FILE, 'HY3 File'),
-)

@@ -3,7 +3,6 @@ from datetime import datetime
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from swimapp.models.choices_constants import FILE_UPLOAD_CHOICES
 from hy3parser.hy3Parser import Hy3Parser
 
 
@@ -26,12 +25,21 @@ class FileUpload(models.Model):
     # pylint: disable=C0330
     # pylint: disable=W0703
     #   Too general an exception
+    # pylint: disable=E1101
+    #   Instance of abc has not member xyz
 
     PENDING, PROCESSED, FAILED = 'Pending', 'Processed', 'Failed'
     STATUSES = (
         (PENDING, PENDING),
         (PROCESSED, PROCESSED),
         (FAILED, FAILED)
+    )
+
+    HY3_FILE = 'hy3_file'
+    OTHER = 'other'
+    FILE_UPLOAD_CHOICES = (
+        (HY3_FILE, 'HY3 File'),
+        (OTHER, 'Other'),
     )
 
     filename = models.CharField(max_length=100)

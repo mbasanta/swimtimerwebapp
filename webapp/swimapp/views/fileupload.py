@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.views.generic import TemplateView
 from swimapp.forms.fileupload import FileUploadForm
+from swimapp.models.choices_constants import 
 from swimapp.models.fileupload import FileUpload
 from swimapp.tasks import process_hy3_upload
 
@@ -57,7 +58,8 @@ class FileUploadCreate(CreateView):
         If the form is valid, save the associated model.
         """
         self.object = form.save()
-        process_hy3_upload.delay(self.object.id)
+        if (self.filetype == FileUpload.HY3_FILE):
+            process_hy3_upload.delay(self.object.id)
         return HttpResponseRedirect(self.get_success_url())
 
     def post(self, request, *args, **kwargs):
