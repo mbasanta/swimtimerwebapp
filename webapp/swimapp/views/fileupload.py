@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.views.generic import TemplateView
 from swimapp.forms.fileupload import FileUploadForm
-from swimapp.models.choices_constants import 
 from swimapp.models.fileupload import FileUpload
 from swimapp.tasks import process_hy3_upload
 

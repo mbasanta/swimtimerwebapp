@@ -1,5 +1,7 @@
 {% extends "base/base.html" %}
+
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 
 {% block page_title %}
   Dashboard
@@ -18,14 +20,15 @@
     <ul id="page-tabs" class="nav nav-tabs" role="tablist">
       <li class="active"><a href="#tab-home" role="tab" data-toggle="tab">Home</a></li>
       <li><a href="#tab-teams" role="tab" data-toggle="tab">Teams</a></li>
-      <li><a href="#tab-other" role="tab" data-toggle="tab">Other</a></li>
+      <li><a href="#tab-meets" role="tab" data-toggle="tab">Meets</a></li>
+      <li><a href="#tab-dataimport" role="tab" data-toggle="tab">Data Import</a></li>
     </ul>
   </div>
   <!-- Tab panes -->
   <div class="tab-content">
     <div class="tab-pane active" id="tab-home">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <dl class="dl-horizontal">
             <dt>Title</dt>
             <dd><p>Data</p></dd>
@@ -35,7 +38,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <a href="" class="btn btn-primary">Place Holder</a>
         </div>
       </div>
@@ -43,8 +46,15 @@
 
     <div class="tab-pane" id="tab-teams">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-3">
           <h3>My Teams</h3>
+        </div>
+        <div class="col-md-9">
+          <h3><a href="" class="btn btn-primary">New Team</a></h3>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
           {% for team in teams %}
             <h4>{{ team }}</h4>
             <dl class="dl-horizontal">
@@ -63,7 +73,28 @@
       </div>
     </div>
 
-    <div class="tab-pane" id="tab-other">Other</div>
+    <div class="tab-pane" id="tab-meets">
+      <div class="row">
+        <div class="col-md-12">
+          <h3>My Meets</h3>
+          <h4>Meet Info</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tab-dataimport">
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Data Import</h3>
+          <h4>Upload File</h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          {% crispy upload_form upload_form.helper %}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
