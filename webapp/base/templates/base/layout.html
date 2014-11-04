@@ -86,7 +86,6 @@
   <!-- scripts concatenated and minified via django-compressor -->
   {% compress js %}
   {% block js %}
-  <script src="{% static 'js/libs/jquery.form.min.js' %}"></script>
   <script src="{% static 'js/main.js' %}"></script>
   {% endblock js %}
   {% endcompress %}

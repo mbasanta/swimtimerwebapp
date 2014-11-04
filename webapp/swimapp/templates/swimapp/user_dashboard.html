@@ -92,9 +92,17 @@
       <div class="row">
         <div class="col-md-12">
           {% crispy upload_form upload_form.helper %}
+          <div id="loading" style="display:none;">
+            <span id="load_text">loading...</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+{% block js %}
+  {{ block.super }}
+  <script src="{% static 'js/libs/jquery.form.min.js' %}"></script>
+  <script src="{% static 'js/user_dashboard.js' %}"></script>
 {% endblock %}
