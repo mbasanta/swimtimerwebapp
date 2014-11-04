@@ -1,4 +1,5 @@
 '''Classes related to Team'''
+import uuid
 from datetime import datetime
 from django.conf import settings
 from django.db import models
@@ -51,7 +52,7 @@ class FileUpload(models.Model):
         max_length=25,
         choices=FILE_UPLOAD_CHOICES)
     docfile = models.FileField(
-        upload_to='documents/%Y/%m/%d/%H/%M/%S',
+        upload_to='documents/%Y/%m/%d/%H/%M/' + str(uuid.uuid4()),
         max_length=300)
     appuser = models.ForeignKey(settings.AUTH_USER_MODEL)
     time_entered = models.DateTimeField(auto_now_add=True)
