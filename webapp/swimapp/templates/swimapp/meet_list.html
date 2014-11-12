@@ -1,0 +1,30 @@
+{% extends "base/base.html" %}
+
+{% load staticfiles %}
+
+{% block page_title %}
+  Meets
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <h1>My Meets</h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <ul>
+        {% for meet in object_list %}
+          <li><a href="{{ meet.id }}/hy3file">{{ meet }}</a></li>
+        {% empty %}
+          <li>No meets yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

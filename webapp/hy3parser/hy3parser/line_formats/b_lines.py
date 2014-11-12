@@ -4,7 +4,9 @@ import re
 # pylint: disable=W0403
 import line_format_errors
 from datetime import datetime
-from .. import constants
+from hy3parser.hy3parser import constants
+from hy3parser.hy3parser.utilities import append_check_sum
+from swimapp.models.meet import Meet
 
 
 class B1Line(object):
@@ -19,12 +21,23 @@ class B1Line(object):
         self.__age_up_date = None
         self.__elevation = None
 
-        if (hy3_line is not None):
+        if type(hy3_line) is Meet:
+            self.__init_meet(hy3_line)
+        elif hy3_line is not None:
             self.__init_hy3_line(hy3_line)
+
+    def __init_meet(self, meet):
+        '''Pseudo-constructor for creating an object from a meet'''
+        self.__meet_name = meet.meet_name
+        self.__facility = meet.facility.facility_name
+        self.__start_date = meet.start_date
+        self.__end_date = meet.end_date
+        self.__age_up_date = meet.age_up_date
+        self.__elevation = meet.facility.elevation
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
-        if (len(hy3_line) == 130 and hy3_line[0:2] == "B1"):
+        if len(hy3_line) == 130 and hy3_line[0:2] == "B1":
             self._parse_meet_name(hy3_line[2:47])
             self._parse_facility(hy3_line[47:92])
             self._parse_start_date(hy3_line[92:100])
@@ -48,9 +61,9 @@ class B1Line(object):
             raw_start_date = raw_start_date.strip()
 
             date_pattern = re.compile(r"^[01][0-9][0-3][0-9][12][0-9]{3}$")
-            if (len(raw_start_date) == 0):
+            if len(raw_start_date) == 0:
                 self.__start_date = None
-            elif (date_pattern.match(raw_start_date)):
+            elif date_pattern.match(raw_start_date):
                 self.__start_date = datetime.strptime(raw_start_date,
                                                       "%m%d%Y").date()
             else:
@@ -64,9 +77,9 @@ class B1Line(object):
             raw_end_date = raw_end_date.strip()
 
             date_pattern = re.compile(r"^[01][0-9][0-3][0-9][12][0-9]{3}$")
-            if (len(raw_end_date) == 0):
+            if len(raw_end_date) == 0:
                 self.__end_date = None
-            elif (date_pattern.match(raw_end_date)):
+            elif date_pattern.match(raw_end_date):
                 self.__end_date = datetime.strptime(raw_end_date,
                                                     "%m%d%Y").date()
             else:
@@ -80,9 +93,9 @@ class B1Line(object):
             raw_age_up_date = raw_age_up_date.strip()
 
             date_pattern = re.compile(r"^[01][0-9][0-3][0-9][12][0-9]{3}$")
-            if (len(raw_age_up_date) == 0):
+            if len(raw_age_up_date) == 0:
                 self.__age_up_date = None
-            elif (date_pattern.match(raw_age_up_date)):
+            elif date_pattern.match(raw_age_up_date):
                 self.__age_up_date = datetime.strptime(raw_age_up_date,
                                                        "%m%d%Y").date()
             else:
@@ -91,7 +104,7 @@ class B1Line(object):
             raise line_format_errors.FieldParseError("age_up_date")
 
     def _parse_elevation(self, raw_elevation):
-        """Parse event number from three character string"""
+        """Parse event number from five character string"""
         raw_elevation = raw_elevation.strip()
 
         try:
@@ -101,6 +114,20 @@ class B1Line(object):
                 self.__elevation = int(raw_elevation, 10)
         except Exception:
             raise line_format_errors.FieldParseError("elevation")
+
+    @property
+    def hy3_line(self):
+        '''return the b1 line for this object'''
+        line = 'B1'
+        line += self.meet_name.ljust(45)
+        line += self.facility.ljust(45)
+        line += self.start_date.strftime('%m%d%Y')
+        line += self.end_date.strftime('%m%d%Y')
+        line += self.age_up_date.strftime('%m%d%Y')
+        line += unicode('' if self.elevation is None else self.elevation) \
+            .ljust(5)
+        line += (' ' * 7)
+        return append_check_sum(line)
 
     @property
     def meet_name(self):
@@ -173,12 +200,24 @@ class B2Line(object):
         self.__course_code_1 = None
         self.__course_code_2 = None
 
-        if (hy3_line is not None):
+        if type(hy3_line) is Meet:
+            self.__init_meet(hy3_line)
+        elif hy3_line is not None:
             self.__init_hy3_line(hy3_line)
+
+    def __init_meet(self, meet):
+        '''Pseudo-constructor for creating an object from a meet'''
+        self.__meet_masters = '06' if meet.meet_masters else ''
+        if meet.meet_type:
+            self.__meet_type = meet.meet_type.type_abbr
+        if meet.course_code_1:
+            self.__course_code_1 = meet.course_code_1.type_abbr
+        if meet.course_code_2:
+            self.__course_code_2 = meet.course_code_2.type_abbr
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
-        if (len(hy3_line) == 130 and hy3_line[0:2] == "B2"):
+        if len(hy3_line) == 130 and hy3_line[0:2] == "B2":
             self._parse_meet_masters(hy3_line[94:96])
             self._parse_meet_type(hy3_line[96:98])
             self._parse_course_code_1(hy3_line[98])
@@ -191,9 +230,9 @@ class B2Line(object):
         try:
             raw_meet_masters = raw_meet_masters.strip().upper()
 
-            if (len(raw_meet_masters) == 0):
+            if len(raw_meet_masters) == 0:
                 self.__meet_masters = False
-            elif (re.match("06", raw_meet_masters)):
+            elif re.match("06", raw_meet_masters):
                 self.__meet_masters = True
             else:
                 raise line_format_errors.FieldParseError("meet_masters")
@@ -205,9 +244,9 @@ class B2Line(object):
         try:
             raw_meet_type = raw_meet_type.strip().upper()
 
-            if (len(raw_meet_type) == 0):
+            if len(raw_meet_type) == 0:
                 self.__meet_type = None
-            elif (raw_meet_type in constants.LINE_TYPE_CONSTANTS.MEET_TYPE):
+            elif raw_meet_type in constants.LINE_TYPE_CONSTANTS.MEET_TYPE:
                 self.__meet_type = raw_meet_type
             else:
                 raise line_format_errors.FieldParseError("meet_type")
@@ -219,10 +258,10 @@ class B2Line(object):
         try:
             raw_course_code_1 = raw_course_code_1.strip().upper()
 
-            if (len(raw_course_code_1) == 0):
+            if len(raw_course_code_1) == 0:
                 self.__course_code_1 = None
             elif (raw_course_code_1 in
-                    constants.LINE_TYPE_CONSTANTS.COURSE_CODE):
+                  constants.LINE_TYPE_CONSTANTS.COURSE_CODE):
                 self.__course_code_1 = raw_course_code_1
             else:
                 raise line_format_errors.FieldParseError("course_code_1")
@@ -234,15 +273,43 @@ class B2Line(object):
         try:
             raw_course_code_2 = raw_course_code_2.strip().upper()
 
-            if (len(raw_course_code_2) == 0):
+            if len(raw_course_code_2) == 0:
                 self.__course_code_2 = None
             elif (raw_course_code_2 in
-                    constants.LINE_TYPE_CONSTANTS.COURSE_CODE):
+                  constants.LINE_TYPE_CONSTANTS.COURSE_CODE):
                 self.__course_code_2 = raw_course_code_2
             else:
                 raise line_format_errors.FieldParseError("course_code_2")
         except Exception:
             raise line_format_errors.FieldParseError("course_code_2")
+
+    @property
+    def hy3_line(self):
+        '''return the b1 line for this object'''
+        line = u'B2'
+        line += (' ' * 92)
+        line += '06' if self.meet_masters else '  '
+
+        if self.meet_type:
+            line += self.meet_type.rjust(2)
+        else:
+            line += (' ' * 2)
+
+        if self.course_code_1:
+            line += self.course_code_1
+        else:
+            line += ' '
+
+        line += (' ' * 7)
+
+        if self.course_code_2:
+            line += self.course_code_2
+        else:
+            line += ' '
+
+        line += (' ' * 21)
+
+        return append_check_sum(line)
 
     @property
     def meet_masters(self):

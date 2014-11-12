@@ -3,7 +3,9 @@
 # pylint: disable=W0403
 import re
 import line_format_errors
-from .. import constants
+from hy3parser.hy3parser import constants
+from hy3parser.hy3parser.utilities import append_check_sum
+from swimapp.models.team import Team
 
 
 class C1Line(object):
@@ -16,12 +18,21 @@ class C1Line(object):
         self.__team_short_name = None
         self.__team_type = None
 
-        if (hy3_line is not None):
+        if type(hy3_line) is Team:
+            self.__init_team(hy3_line)
+        elif hy3_line is not None:
             self.__init_hy3_line(hy3_line)
+
+    def __init_team(self, team):
+        '''Pseudo-constructor for creating an object from a meet'''
+        self.__team_abbr = team.team_abbr
+        self.__team_name = team.team_name
+        self.__team_short_name = team.team_short_name
+        self.__team_type = team.team_type
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
-        if (len(hy3_line) == 130 and hy3_line[0:2] == "C1"):
+        if len(hy3_line) == 130 and hy3_line[0:2] == "C1":
             self._parse_team_abbr(hy3_line[2:7])
             self._parse_team_name(hy3_line[7:37])
             self._parse_team_short_name(hy3_line[37:53])
@@ -46,14 +57,33 @@ class C1Line(object):
         try:
             raw_team_type = raw_team_type.strip().upper()
 
-            if (len(raw_team_type) == 0):
+            if len(raw_team_type) == 0:
                 self.__team_type = None
-            elif (raw_team_type in constants.LINE_TYPE_CONSTANTS.TEAM_TYPE):
+            elif raw_team_type in constants.LINE_TYPE_CONSTANTS.TEAM_TYPE:
                 self.__team_type = raw_team_type
             else:
                 raise Exception
         except Exception:
             raise line_format_errors.FieldParseError("team_type")
+
+    @property
+    def hy3_line(self):
+        '''return the C1 line for this object'''
+        line = 'C1'
+        line += self.team_abbr.ljust(5)
+        line += self.team_name.ljust(30)
+        line += self.team_short_name.ljust(16)
+
+        line += (' ' * 66)
+
+        if self.team_type:
+            line += self.team_type.type_abbr.rjust(3)
+        else:
+            line += (' ' * 3)
+
+        line += (' ' * 6)
+
+        return append_check_sum(line)
 
     @property
     def team_abbr(self):
@@ -109,8 +139,20 @@ class C2Line(object):
         self.__addr_country = None
         self.__team_reg = None
 
-        if (hy3_line is not None):
+        if type(hy3_line) is Team:
+            self.__init_team(hy3_line)
+        elif hy3_line is not None:
             self.__init_hy3_line(hy3_line)
+
+    def __init_team(self, team):
+        '''Pseudo-constructor for creating an object from a meet'''
+        self.__addr_name = team.addr_name
+        self.__addr = team.addr
+        self.__addr_city = team.addr_city
+        self.__addr_state = team.addr_state
+        self.__addr_zip = team.addr_zip
+        self.__addr_country = team.addr_country
+        self.__team_reg = team.team_reg
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
@@ -187,6 +229,27 @@ class C2Line(object):
                 raise Exception
         except Exception:
             raise line_format_errors.FieldParseError("team_reg")
+
+    @property
+    def hy3_line(self):
+        '''return the C2 line for this object'''
+        line = u'C2'
+        line += self.addr_name.ljust(30)
+        line += self.addr.ljust(30)
+        line += self.addr_city.ljust(30)
+        line += self.addr_state.ljust(2)
+        line += self.addr_zip.ljust(10)
+        line += self.addr_country.ljust(3)
+        line += (' ')
+
+        if self.team_reg:
+            line += self.team_reg.type_abbr.rjust(4)
+        else:
+            line += (' ' * 4)
+
+        line += (' ' * 16)
+
+        return append_check_sum(line)
 
     @property
     def addr_name(self):
