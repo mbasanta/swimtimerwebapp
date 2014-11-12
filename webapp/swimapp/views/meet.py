@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.views.generic import ListView, View
 from django.utils.decorators import method_decorator
 from hy3parser.hy3parser.line_formats.b_lines import B1Line, B2Line
+from hy3parser.hy3parser.line_formats.c_lines import C1Line, C2Line
 from swimapp.models.meet import Meet
 
 
@@ -25,6 +26,8 @@ class MeetHy3File(View):
             + str(meet.id) + '.txt"'
         response.write(B1Line(meet).hy3_line)
         response.write('\n' + B2Line(meet).hy3_line)
+        response.write('\n' + C1Line(meet.team).hy3_line)
+        response.write('\n' + C2Line(meet.team).hy3_line)
         for meetevent in meet.meetevent_set.all():
             response.write('\n' + str(meetevent.event))
             for entry in meetevent.entry_set.all():
