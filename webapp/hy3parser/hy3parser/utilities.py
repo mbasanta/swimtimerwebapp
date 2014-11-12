@@ -39,6 +39,74 @@ class MultipleLinesFoundException(Exception):
         return repr(self.message)
 
 
+def append_check_sum(input_str, file_format=None):
+    """
+    append_check_sum is used for exporting Team Manager/Meet Manager
+    compliant files.
+    Parameters:
+    -inputStr: string to be written to file.  It must be the correct length
+    (HY3-128 characters, CL2-156 characters).
+    -fileFormat: string indicating desired file format (HY3/CL2)
+    """
+    # check if inputStr is a string
+    if not isinstance(input_str, unicode):
+        raise CheckSumExportException("input_str parameter is not a string")
+
+    #check if fileFormat is specified and if it is, if it is a string
+    if file_format is None:
+        if len(input_str) == HY3FileLength:
+            file_format = "HY3"
+        elif len(input_str) == CL2FileLength:
+            file_format = "CL2"
+        else:
+            raise CheckSumExportException("inputStr is not the correct " +
+                                          "length for either CL2 or HY3")
+    elif not isinstance(file_format, unicode):
+        raise CheckSumExportException("fileFormat parameter is not a string")
+    else:
+        if input_str.upper() == "HY3":
+            file_format = "HY3"
+        elif input_str.upper() == "CL2":
+            file_format = "CL2"
+        else:
+            raise CheckSumExportException("fileFormat parameter is \
+                neither HY3 nor CL2")
+
+    if file_format == "HY3":
+        evens = input_str[::2]
+        evens_sum = sequence_sum(evens)
+
+        odds = input_str[1::2]
+        odds_sum = sequence_sum(odds)
+
+        total = evens_sum + 2*odds_sum
+
+        final = unicode(int(floor(total/HY3Scale) + HY3Offset))
+
+        return input_str + final[-1] + final[-2]
+    else:  # CL2
+        total = sequence_sum(input_str)
+
+        final = unicode(int(floor(total/CL2Scale) + CL2Offset))
+
+        suffix = ""
+        if input_str.startswith("DO"):
+            suffix += "NN"
+        else:
+            suffix += " N"
+
+        return input_str + suffix + final[-1] + final[-2]
+
+
+def sequence_sum(char_sequence):
+    '''Calc sum of sequence of characters'''
+    seq_sum = 0
+    for char in char_sequence:
+        seq_sum += ord(char)
+
+    return seq_sum
+
+
 def vals_from_dict(dictionary):
     """
     Return a dictionary iterator that python v2 or v3 compatible
@@ -47,66 +115,3 @@ def vals_from_dict(dictionary):
         return dictionary.itervalues()
     except AttributeError:
         return dictionary.values()
-
-
-def appendCheckSum(inputStr, fileFormat=None):
-    """appendCheckSum is used for exporting Team Manager/Meet Manager compliant
-    files. 
-    Parameters:
-    -inputStr: string to be written to file.  It must be the correct length (
-    HY3-128 characters, CL2-156 characters).
-    -fileFormat: string indicating desired file format (HY3/CL2)"""
-    
-    #check if inputStr is a string
-    if (not isinstance(inputStr,str)):
-        raise CheckSumExportException("inputStr parameter is not a string")
-    
-    #check if fileFormat is specified and if it is, if it is a string
-    if (fileFormat == None):
-        if (len(inputStr) == HY3FileLength):
-            fileFormat = "HY3"
-        elif (len(inputStr) == CL2FileLength):
-            fileFormat = "CL2"
-        else:
-            raise CheckSumExportException("inputStr is not the correct length for either CL2 or HY3")
-    elif (not isinstance(fileFormat,str)):
-        raise CheckSumExportException("fileFormat parameter is not a string")
-    else:
-        if (inputStr.upper() == "HY3"):
-            fileFormat = "HY3"
-        elif (inputStr.upper() == "CL2"):
-            fileFormat = "CL2"
-        else:
-            raise CheckSumExportException("fileFormat parameter is neither HY3 nor CL2")
-    
-    if (fileFormat == "HY3"):
-        evens = inputStr[::2]
-        evensSum = sequenceSum(evens)
-        
-        odds = inputStr[1::2]
-        oddsSum = sequenceSum(odds)
-        
-        total = evensSum + 2*oddsSum
-        
-        final = str(int(floor(total/HY3Scale) + HY3Offset))
-        
-        return inputStr + final[-1] + final[-2]
-    else: #CL2
-        total = sequenceSum(inputStr)
-        
-        final = str(int(floor(total/CL2Scale) + CL2Offset))
-        
-        suffix = ""
-        if (inputStr.startswith("DO")):
-            suffix += "NN"
-        else:
-            suffix += " N"
-        
-        return inputStr + suffix + final[-1] + final[-2]
-        
-def sequenceSum(charSequence):
-    seqSum = 0;
-    for c in charSequence:
-        seqSum += ord(c)
-    
-    return seqSum
