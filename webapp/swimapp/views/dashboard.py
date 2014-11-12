@@ -5,7 +5,6 @@ from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from swimapp.forms.fileupload import FileUploadForm
 from swimapp.models.team import Team
-from swimapp.models.meet import Meet
 
 
 class DashboardView(TemplateView):
