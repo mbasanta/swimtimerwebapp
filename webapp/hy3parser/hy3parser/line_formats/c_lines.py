@@ -156,7 +156,7 @@ class C2Line(object):
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
-        if (len(hy3_line) == 130 and hy3_line[0:2] == "C2"):
+        if len(hy3_line) == 130 and hy3_line[0:2] == "C2":
             self._parse_addr_name(hy3_line[2:32])
             self._parse_addr(hy3_line[32:62])
             self._parse_addr_city(hy3_line[62:92])
@@ -184,7 +184,7 @@ class C2Line(object):
         try:
             raw_addr_state = raw_addr_state.strip().upper()
 
-            if (re.match("^([A-Z]{2})?$", raw_addr_state)):
+            if re.match("^([A-Z]{2})?$", raw_addr_state):
                 self.__addr_state = raw_addr_state
             else:
                 raise Exception
@@ -196,7 +196,7 @@ class C2Line(object):
         try:
             raw_addr_zip = raw_addr_zip.strip().upper()
 
-            if (re.match("^(([0-9]{5})(-[0-9]{4})?)?$", raw_addr_zip)):
+            if re.match("^(([0-9]{5})(-[0-9]{4})?)?$", raw_addr_zip):
                 self.__addr_zip = raw_addr_zip
             else:
                 raise Exception
@@ -208,7 +208,7 @@ class C2Line(object):
         try:
             raw_addr_country = raw_addr_country.strip().upper()
 
-            if (re.match("^[A-Z]*$", raw_addr_country)):
+            if re.match("^[A-Z]*$", raw_addr_country):
                 self.__addr_country = raw_addr_country
             else:
                 raise Exception
@@ -220,10 +220,10 @@ class C2Line(object):
         try:
             raw_team_reg = raw_team_reg.strip().upper()
 
-            if (len(raw_team_reg) == 0):
+            if len(raw_team_reg) == 0:
                 self.__team_reg = None
-            elif (raw_team_reg in
-                    constants.LINE_TYPE_CONSTANTS.TEAM_REGISTRATION):
+            elif raw_team_reg in \
+                    constants.LINE_TYPE_CONSTANTS.TEAM_REGISTRATION:
                 self.__team_reg = raw_team_reg
             else:
                 raise Exception
@@ -243,7 +243,7 @@ class C2Line(object):
         line += (' ')
 
         if self.team_reg:
-            line += self.team_reg.type_abbr.rjust(4)
+            line += self.team_reg.type_abbr.ljust(4)
         else:
             line += (' ' * 4)
 
@@ -332,12 +332,21 @@ class C3Line(object):
         self.__fax = None
         self.__email = None
 
-        if (hy3_line is not None):
+        if type(hy3_line) is Team:
+            self.__init_team(hy3_line)
+        elif hy3_line is not None:
             self.__init_hy3_line(hy3_line)
+
+    def __init_team(self, team):
+        '''Pseudo-constructor for creating an object from a meet'''
+        self.__daytime_phone = team.daytime_phone
+        self.__evening_phone = team.evening_phone
+        self.__fax = team.fax
+        self.__email = team.email
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
-        if (len(hy3_line) == 130 and hy3_line[0:2] == "C3"):
+        if len(hy3_line) == 130 and hy3_line[0:2] == "C3":
             self._parse_daytime_phone(hy3_line[32:52])
             self._parse_evening_phone(hy3_line[52:72])
             self._parse_fax(hy3_line[72:92])
@@ -360,6 +369,18 @@ class C3Line(object):
     def _parse_email(self, raw_email):
         """Parse email address from 36 character string"""
         self.__email = raw_email.strip()
+
+    @property
+    def hy3_line(self):
+        '''return the C3 line for this object'''
+        line = u'C3'
+        line += (' ' * 30)
+        line += self.daytime_phone.ljust(20)
+        line += self.evening_phone.ljust(20)
+        line += self.fax.ljust(20)
+        line += self.email.ljust(36)
+
+        return append_check_sum(line)
 
     @property
     def daytime_phone(self):
