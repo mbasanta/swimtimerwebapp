@@ -4,6 +4,8 @@ import re
 # pylint: disable=W0403
 import line_format_errors
 from datetime import datetime
+from hy3parser.hy3parser.utilities import append_check_sum
+from swimapp.models.athlete import Athlete
 
 
 class D1Line(object):
@@ -22,12 +24,27 @@ class D1Line(object):
         self.__date_of_birth = None
         self.__age = None
 
-        if (hy3_line is not None):
+        if type(hy3_line) is Athlete:
+            self.__init_athlete(hy3_line)
+        elif hy3_line is not None:
             self.__init_hy3_line(hy3_line)
+
+    def __init_athlete(self, athlete):
+        '''Pseudo-constructor for creating an object from a meet'''
+        self.__gender = athlete.gender
+        self.__event_swimmer_id = None
+        self.__last_name = athlete.last_name
+        self.__first_name = athlete.first_name
+        self.__nick_name = None
+        self.__middle_initial = None
+        self.__uss_num = None
+        self.__team_swimmer_id = None
+        self.__date_of_birth = athlete.date_of_birth
+        self.__age = None
 
     def __init_hy3_line(self, hy3_line):
         """ Pseudo-constructor for creating and oject from a hy3 file line"""
-        if (len(hy3_line) == 130 and hy3_line[0:2] == "D1"):
+        if len(hy3_line) == 130 and hy3_line[0:2] == "D1":
             self._parse_gender(hy3_line[2])
             self._parse_event_swimmer_id(hy3_line[3:8])
             self._parse_last_name(hy3_line[8:28])
@@ -43,7 +60,7 @@ class D1Line(object):
 
     def _parse_gender(self, raw_gender):
         """Parse gender from a one character string"""
-        if (re.match("[MF]", raw_gender.upper())):
+        if re.match("[MF]", raw_gender.upper()):
             self.__gender = raw_gender.upper()
         else:
             raise line_format_errors.FieldParseError("gender")
@@ -83,7 +100,7 @@ class D1Line(object):
 
             if len(raw_uss_num) == 0:
                 self.__uss_num = None
-            elif (re.match(r"^[\*0-9A-Z]+$", raw_uss_num)):
+            elif re.match(r"^[\*0-9A-Z]+$", raw_uss_num):
                 self.__uss_num = raw_uss_num
             else:
                 raise line_format_errors.FieldParseError("uss_num")
@@ -118,13 +135,31 @@ class D1Line(object):
         """Parse date of birth to date from eight character string"""
         try:
             date_pattern = re.compile(r"^[01][0-9][0-3][0-9][12][0-9]{3}$")
-            if (date_pattern.match(raw_date_of_birth)):
+            if date_pattern.match(raw_date_of_birth):
                 self.__date_of_birth = datetime.strptime(raw_date_of_birth,
                                                          "%m%d%Y").date()
             else:
                 raise line_format_errors.FieldParseError("date_of_birth")
         except Exception:
             raise line_format_errors.FieldParseError("date_of_birth")
+
+    @property
+    def hy3_line(self):
+        '''return the D1 line for this object'''
+        line = 'D1'
+        line += self.gender.ljust(1)
+        line += str(self.event_swimmer_id).ljust(5)
+        line += self.last_name.ljust(20)
+        line += self.first_name.ljust(20)
+        line += self.nick_name.ljust(20)
+        line += self.middle_initial.ljust(1)
+        line += self.uss_num.ljust(14)
+        line += str(self.team_swimmer_id).ljust(5)
+        line += self.date_of_birth.strftime('%m%d%Y')
+        line += (' ')
+        line += str(self.age).ljust(2)
+        line += (' ' * 29)
+        return append_check_sum(line)
 
     @property
     def gender(self):

@@ -12,3 +12,11 @@ GENDER_CHOICES = (
     (_MALE, 'Male'),
     (_FEMALE, 'Female'),
 )
+
+EVENT_CODES = {
+    'A': 1,
+    'B': 2,
+    'C': 3,
+    'D': 4,
+    'E': 5
+}
