@@ -43,7 +43,7 @@ class Event(models.Model):
         line = str(self.id)
         line += ';F'  # Masters
         line += ';' + self.gender
-        line += ';' + 'R' if self.is_relay else 'I'
+        line += ';' + ('R' if self.is_relay else 'I')
         line += ';' + str(self.lower_age)
         line += ';' + str(self.upper_age)
         line += ';' + str(self.distance)
