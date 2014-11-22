@@ -17,6 +17,7 @@ class FileUploadForm(ModelForm):
     def __init__(self, *args, **kwargs):
         '''Team Form Constructor'''
         super(FileUploadForm, self).__init__(*args, **kwargs)
+
         self.helper = FormHelper()
         self.helper.form_id = 'team_form'
         self.helper.form_class = 'form-horizontal'
@@ -24,6 +25,9 @@ class FileUploadForm(ModelForm):
         self.helper.field_class = 'col-md-6'
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Upload'))
+
+        self.ajax_helper = self.helper
+        self.helper.form_action = 'swimapp_file_upload_new'
 
     class Meta:
         '''Django meta info'''

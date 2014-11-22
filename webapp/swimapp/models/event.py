@@ -2,9 +2,11 @@
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib import admin
-from .stroke import Stroke
-from .meet_event import MeetEventInline
-from .choices_constants import GENDER_CHOICES, DISTANCE_UNIT_CHOICES
+from swimapp.models.stroke import Stroke
+from swimapp.models.meet_event import MeetEventInline
+from swimapp.models.choices_constants import (GENDER_CHOICES,
+                                              DISTANCE_UNIT_CHOICES,
+                                              EVENT_CODES)
 
 
 class EventManager(models.Manager):  # pylint: disable=R0904
@@ -34,6 +36,21 @@ class Event(models.Model):
     is_relay = models.BooleanField(default=False)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
+
+    @property
+    def hyv_line(self):
+        '''Generate the event line for a hyv file'''
+        line = str(self.id)
+        line += ';F'  # Masters
+        line += ';' + self.gender
+        line += ';' + ('R' if self.is_relay else 'I')
+        line += ';' + str(self.lower_age)
+        line += ';' + str(self.upper_age)
+        line += ';' + str(self.distance)
+        line += ';' + str(EVENT_CODES[self.stroke.type_abbr])
+        line += ';;;;0;;;;;;'
+
+        return line
 
     @property
     def distance_text(self):

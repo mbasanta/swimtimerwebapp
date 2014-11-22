@@ -13,7 +13,10 @@ GENDER_CHOICES = (
     (_FEMALE, 'Female'),
 )
 
-_HY3_FILE = 'hy3_file'
-FILE_UPLOAD_CHOICES = (
-    (_HY3_FILE, 'HY3 File'),
-)
+EVENT_CODES = {
+    'A': 1,
+    'B': 2,
+    'C': 3,
+    'D': 4,
+    'E': 5
+}

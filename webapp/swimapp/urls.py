@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 from swimapp.views.team import TeamView, TeamCreate, TeamUpdate, TeamList
 from swimapp.views.dashboard import DashboardView
-from swimapp.views.fileupload import (FileUploadView, FileUploadCreate,
-                                      FileUploadList)
+from swimapp.views.fileupload import FileUploadCreate, FileUploadList
+from swimapp.views.meet import MeetListView, MeetHy3File
 
 
 urlpatterns = patterns('swimapp.views',
@@ -17,4 +17,6 @@ urlpatterns = patterns('swimapp.views',
         name='swimapp_file_upload_list'),
     url(r'^fileupload/new/$', FileUploadCreate.as_view(),
         name='swimapp_file_upload_new'),
+    url(r'^meet/$', MeetListView.as_view(), name='swimapp_meet_list'),
+    url(r'^meet/(?P<pk>\d+)/hy3file/$', MeetHy3File.as_view(), name='swimapp_meet_hy3file'),
 )

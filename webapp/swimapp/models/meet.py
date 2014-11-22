@@ -5,15 +5,15 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.contrib import admin
-from .athlete import Athlete
-from .meet_type import MeetType
-from .meet_config import MeetConfig
-from .course_code import CourseCode
-from .event import Event
-from .meet_event import MeetEvent
-from .meet_event import MeetEventInline
-from .team import Team
-from .facility import Facility
+from swimapp.models.athlete import Athlete
+from swimapp.models.meet_type import MeetType
+from swimapp.models.meet_config import MeetConfig
+from swimapp.models.course_code import CourseCode
+from swimapp.models.event import Event
+from swimapp.models.meet_event import MeetEvent
+from swimapp.models.meet_event import MeetEventInline
+from swimapp.models.team import Team
+from swimapp.models.facility import Facility
 
 
 class MeetManager(models.Manager):  # pylint: disable=R0904
