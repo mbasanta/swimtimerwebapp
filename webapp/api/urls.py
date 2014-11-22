@@ -38,4 +38,8 @@ urlpatterns = patterns('',
     url(r'^meetsbyteam/(?P<team>[^/]+)/$',
         views.MeetByTeamList.as_view(),
         name='meet-by-team-list'),
+
+    url(r'^results/(?P<pk>[0-9]+)/$',
+        views.ResultsUpload.as_view(),
+        name='results-upload'),
 )
