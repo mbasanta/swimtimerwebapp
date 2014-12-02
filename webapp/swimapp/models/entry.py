@@ -34,6 +34,10 @@ class Entry(models.Model):
     override_order = models.IntegerField(
         blank=True,
         null=True)
+    score = models.IntegerField(
+        blank=True,
+        null=True)
+    scoring_heat = models.BooleanField(default=False)
     meetevent = models.ForeignKey(MeetEvent)
     athletes = models.ManyToManyField('Athlete', through='AthleteEntry')
     time_entered = models.DateTimeField(auto_now_add=True)
