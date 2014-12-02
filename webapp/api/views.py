@@ -135,3 +135,9 @@ class TeamViewSet(viewsets.ModelViewSet):
     serializer_class = TeamSerializer
     renderer_classes = (SwimAppJSONRenderer,)
     permission_classes = [permissions.IsAuthenticated,]
+
+
+class ResultsUpload(generics.CreateAPIView):
+    queryset = Entry.objects.all()
+    serializer_class = EntrySerializer
+    permission_classes = [permissions.IsAuthenticated,]
