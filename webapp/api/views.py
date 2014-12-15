@@ -1,3 +1,10 @@
+'''Views for Hydro.IO API'''
+
+# pylint: disable=R0903, R0904
+# # Too few and too many public methods
+# pylint: disable=R0901
+# # Too many ancestors
+
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_list_or_404
@@ -14,7 +21,8 @@ from api.renderers import SwimAppJSONRenderer
 
 
 @api_view(('GET',))
-def api_root(request, format=None):
+def api_root(request, format=None):  # pylint: disable=W0622
+    '''Boilerplate views for API, remove before production'''
     return Response({
         'users': reverse('user-list', request=request, format=format),
         'groups': reverse('group-list', request=request, format=format),
@@ -124,6 +132,7 @@ class TeamsByUserList(generics.ListAPIView):
 
 
 class EventViewSet(viewsets.ModelViewSet):
+    '''Viewset for generic Event api views'''
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     renderer_classes = (SwimAppJSONRenderer,)
@@ -131,6 +140,7 @@ class EventViewSet(viewsets.ModelViewSet):
 
 
 class TeamViewSet(viewsets.ModelViewSet):
+    '''Viewset for generic team api views'''
     queryset = Team.objects.all()
     serializer_class = TeamSerializer
     renderer_classes = (SwimAppJSONRenderer,)
@@ -138,6 +148,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
 
 class ResultsUpload(generics.CreateAPIView):
+    '''Upload results api endpoint view'''
     queryset = Entry.objects.all()
     serializer_class = ResultEntrySerializer
     permission_classes = [permissions.IsAuthenticated, ]
