@@ -13,6 +13,13 @@ GENDER_CHOICES = (
     (_FEMALE, 'Female'),
 )
 
+_SPLIT_RESULT = 'split'
+_FINAL_RESULT = 'final'
+RESULT_TYPES = (
+    (_SPLIT_RESULT, 'Split'),
+    (_FINAL_RESULT, 'Final'),
+)
+
 EVENT_CODES = {
     'A': 1,
     'B': 2,

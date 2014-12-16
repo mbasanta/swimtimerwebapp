@@ -1,9 +1,22 @@
 '''API serializers'''
-# pylint: disable=E1123, E1120, R0903
+
+# pylint: disable=R0903, R0904
+# # Too few and too many public methods
+# pylint: disable=W0142
+# # Used * or ** magic
+# pylint: disable=R0201
+# # Method could be a function
+# pylint: disable=W0223
+# # Method is abstract but not overridden
+# pylint: disable=C0103
+# # Invalid property name
+
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from swimapp.models import (Meet, Event, Team, Entry, Version, Athlete,
-                            AthleteEntry, Facility, MeetEvent)
+from swimapp.models import (Event, Team, Entry, Version, Athlete,
+                            AthleteEntry)
+from swimapp.models.facility import Facility
+from swimapp.models.meet import Meet, MeetEvent
 from rest_framework import serializers
 
 
@@ -62,9 +75,43 @@ class EntrySerializer(serializers.ModelSerializer):
                   'override_order', 'athleteentry_set',)
 
 
+class ResultJudgeSerializer(serializers.Serializer):
+    '''Serializer for result judge'''
+    username = serializers.CharField(max_length=50)
+    is_authenticated = serializers.BooleanField()
+    is_override = serializers.BooleanField()
+
+
+class ResultDqSerializer(serializers.Serializer):
+    '''Serializer for DQ reasons associated with a result'''
+    judge = ResultJudgeSerializer()
+    reason = serializers.CharField(max_length=50)
+
+
+class ResultFinishPlace(serializers.Serializer):
+    '''Serializer for finish place'''
+    judge = ResultJudgeSerializer()
+    finish_place = serializers.IntegerField()
+
+
+class ResultEntrySerializer(serializers.ModelSerializer):
+    '''Serializer for uploading Entry results'''
+    dq_set = ResultDqSerializer(many=True)
+    finishplace_set = ResultFinishPlace(many=True)
+
+    class Meta(object):
+        '''Django meta for ResultEntrySerializer'''
+        model = Entry
+        fields = ('id', 'lane_number', 'heat', 'result_time', 'score',
+                  'scoring_heat', 'dq_set', 'finishplace_set')
+
+    def update(self, instance, validated_data):
+        return Entry.objects.create_from_serializer(instance, validated_data)
+
+
 class EventSerializer(serializers.ModelSerializer):
     '''Serializer for Event class'''
-    stroke = serializers.RelatedField(many=False)
+    stroke = serializers.StringRelatedField()
 
     class Meta(object):
         '''Django meta for EventSerializer'''
@@ -86,8 +133,8 @@ class MeetEventSerializer(serializers.ModelSerializer):
 
 class FacilitySerializer(serializers.ModelSerializer):
     '''Serializer for facility class'''
-    length_1 = serializers.RelatedField()
-    length_2 = serializers.RelatedField()
+    length_1 = serializers.StringRelatedField()
+    length_2 = serializers.StringRelatedField()
 
     class Meta(object):
         '''Django meta for FacilitySerializer'''
@@ -112,11 +159,11 @@ class ShortTeamSerializer(serializers.ModelSerializer):
 class MeetSerializer(serializers.ModelSerializer):
     '''Serializer for all meet info and dependencies'''
     facility = FacilitySerializer()
-    meetevent_set = MeetEventSerializer()
-    meet_type = serializers.RelatedField(many=False)
-    course_code_1 = serializers.RelatedField(many=False)
-    course_code_2 = serializers.RelatedField(many=False)
-    meet_config = serializers.RelatedField(many=False)
+    meetevent_set = MeetEventSerializer(many=True)
+    meet_type = serializers.StringRelatedField()
+    course_code_1 = serializers.StringRelatedField()
+    course_code_2 = serializers.StringRelatedField()
+    meet_config = serializers.StringRelatedField()
     athletes_for_meet = AthleteSerializer(many=True)
     teams_for_meet = ShortTeamSerializer(many=True)
 
@@ -132,11 +179,10 @@ class MeetSerializer(serializers.ModelSerializer):
 
 class MeetListSerializer(serializers.ModelSerializer):
     '''Serializer for meets to give basic info for the list view'''
-    meet_masters = serializers.RelatedField()
-    meet_type = serializers.RelatedField()
-    course_code_1 = serializers.RelatedField()
-    course_code_2 = serializers.RelatedField()
-    meet_config = serializers.RelatedField()
+    meet_type = serializers.StringRelatedField()
+    course_code_1 = serializers.StringRelatedField()
+    course_code_2 = serializers.StringRelatedField()
+    meet_config = serializers.StringRelatedField()
 
     class Meta(object):
         '''Django meta for MeetSerializer'''
@@ -149,8 +195,8 @@ class MeetListSerializer(serializers.ModelSerializer):
 
 class ShortMeetSerializer(serializers.ModelSerializer):
     '''Serializer for basic meet info'''
-    facility = serializers.RelatedField()
-    meet_config = serializers.RelatedField(many=False)
+    facility = serializers.StringRelatedField()
+    meet_config = serializers.StringRelatedField()
 
     class Meta(object):
         '''Django meta for ShortMeetSerializer'''
@@ -162,11 +208,10 @@ class ShortMeetSerializer(serializers.ModelSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     '''Serializer for Team class'''
     meet_set = ShortMeetSerializer(many=True)
-    all_meet_set = ShortMeetSerializer(many=True)
 
     class Meta(object):
         '''Django meta for TeamSerializer'''
         model = Team
         fields = ('id', 'team_name', 'team_abbr', 'team_color1', 'team_color2',
                   'addr_name', 'addr', 'addr_city', 'addr_state', 'addr_zip',
-                  'addr_country', 'meet_set', 'all_meet_set')
+                  'addr_country', 'meet_set')
