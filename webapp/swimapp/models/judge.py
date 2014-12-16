@@ -7,6 +7,7 @@
 
 from django.conf import settings
 from django.db import models
+from base.models import AppUser
 
 
 class JudgeManager(models.Manager):
@@ -15,6 +16,22 @@ class JudgeManager(models.Manager):
     class Meta(object):
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
+
+    def create_from_serializer(self, judge_data):
+        '''get or create a judge from the serializer data'''
+        judge, new_judge = self.get_or_create(  # pylint:disable=W0612
+            username=judge_data['username'],
+            is_authenticated=judge_data['is_authenticated'],
+            is_override=judge_data['is_override'],)
+
+        try:
+            user = AppUser.objects.get(email=judge.username)
+            judge.user = user
+            judge.save()
+        except AppUser.DoesNotExist:  # pylint:disable=E1101
+            judge.user = None
+
+        return judge
 
 
 class Judge(models.Model):
