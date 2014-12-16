@@ -7,7 +7,7 @@
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_list_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 from swimapp.models import Meet, Event, Team, Version, Entry
 from rest_framework import viewsets, generics, permissions
 from rest_framework.decorators import api_view
@@ -147,8 +147,14 @@ class TeamViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, ]
 
 
-class ResultsUpload(generics.CreateAPIView):
+class ResultsUpload(generics.UpdateAPIView):
     '''Upload results api endpoint view'''
     queryset = Entry.objects.all()
     serializer_class = ResultEntrySerializer
     permission_classes = [permissions.IsAuthenticated, ]
+
+    def get_object(self):
+        '''fetch entry based on id in json'''
+        #import pdb;pdb.set_trace()
+        entry_id = self.request.DATA.get('id')
+        return get_object_or_404(Entry, id=entry_id)

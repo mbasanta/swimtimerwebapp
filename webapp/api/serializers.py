@@ -1,11 +1,22 @@
 '''API serializers'''
-# pylint: disable=E1101, E1123, E1120, R0903
+
+# pylint: disable=R0903, R0904
+# # Too few and too many public methods
+# pylint: disable=W0142
+# # Used * or ** magic
+# pylint: disable=R0201
+# # Method could be a function
+# pylint: disable=W0223
+# # Method is abstract but not overridden
+# pylint: disable=C0103
+# # Invalid property name
+
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from swimapp.models import (Event, Team, Entry, Version, Athlete,
                             AthleteEntry)
-from swimapp.models.facility import Facility, CourseCode
-from swimapp.models.meet import Meet, MeetConfig, MeetType, MeetEvent
+from swimapp.models.facility import Facility
+from swimapp.models.meet import Meet, MeetEvent
 from rest_framework import serializers
 
 
@@ -80,38 +91,22 @@ class ResultDqSerializer(serializers.Serializer):
 class ResultFinishPlace(serializers.Serializer):
     '''Serializer for finish place'''
     judge = ResultJudgeSerializer()
-    place = serializers.IntegerField()
+    finish_place = serializers.IntegerField()
 
 
-class ResultEntrySerializer(serializers.Serializer):
+class ResultEntrySerializer(serializers.ModelSerializer):
     '''Serializer for uploading Entry results'''
-    id = serializers.IntegerField()
-    lane_number = serializers.IntegerField()
-    heat = serializers.IntegerField()
-    result_time = serializers.FloatField()
-    score = serializers.IntegerField()
-    scoring_heat = serializers.BooleanField()
-    dqs = ResultDqSerializer(many=True)
-    finish_places = ResultFinishPlace(many=True)
+    dq_set = ResultDqSerializer(many=True)
+    finishplace_set = ResultFinishPlace(many=True)
 
-    def restore_object(self, attrs, instance=None):
-        '''
-        Given a dictionary of deserialized field values either update an
-        existing model instance or create a new model instance
-        '''
-        print(attrs)
-        if instance is not None:
-            instance.id = attrs.get('id', instance.id)
-            instance.lane_number = attrs.get('lane_number',
-                                             instance.lane_number)
-            instance.heat = attrs.get('heat', instance.heat)
-            instance.result_time = attrs.get('result_time',
-                                             instance.result_time)
-            instance.score = attrs.get('score', instance.score)
-            instance.scoring_heat = attrs.get('scoring_heat',
-                                              instance.scoring_heat)
-            return instance
-        return Entry(**attrs)
+    class Meta(object):
+        '''Django meta for ResultEntrySerializer'''
+        model = Entry
+        fields = ('id', 'lane_number', 'heat', 'result_time', 'score',
+                  'scoring_heat', 'dq_set', 'finishplace_set')
+
+    def update(self, instance, validated_data):
+        return Entry.objects.create_from_serializer(instance, validated_data)
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -163,7 +158,6 @@ class ShortTeamSerializer(serializers.ModelSerializer):
 
 class MeetSerializer(serializers.ModelSerializer):
     '''Serializer for all meet info and dependencies'''
-    #import pdb; pdb.set_trace()
     facility = FacilitySerializer()
     meetevent_set = MeetEventSerializer(many=True)
     meet_type = serializers.StringRelatedField()
