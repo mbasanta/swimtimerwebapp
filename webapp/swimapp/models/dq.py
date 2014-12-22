@@ -9,6 +9,7 @@
 
 from django.db import models
 from swimapp.models.judge import Judge
+from swimapp.models.violation import Violation
 
 
 class DQManager(models.Manager):
@@ -36,6 +37,7 @@ class DQManager(models.Manager):
 
 class DQ(models.Model):
     '''DQ info'''
+    violation = models.ForeignKey(Violation)
     reason = models.CharField(max_length=500)
     entry = models.ForeignKey('swimapp.Entry')
     judge = models.ForeignKey(Judge)
