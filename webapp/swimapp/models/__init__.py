@@ -21,3 +21,4 @@ from finish_place import FinishPlace, FinishPlaceManager
 from judge import Judge, JudgeManager
 from result import Result, ResultManager
 from violation import Violation, ViolationManager
+from false_start import FalseStart, FalseStartManager
