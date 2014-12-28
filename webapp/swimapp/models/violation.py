@@ -11,7 +11,6 @@
 
 from django.db import models
 from django.db.models import Q
-from swimapp.models.meet import Meet
 from swimapp.models.stroke import Stroke
 
 
@@ -42,7 +41,7 @@ class Violation(models.Model):
         blank=True,
         null=True)
     title = models.CharField(max_length=500)
-    meets = models.ManyToManyField(Meet)
+    meets = models.ManyToManyField('swimapp.Meet')
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
