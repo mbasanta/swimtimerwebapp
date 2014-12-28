@@ -16,6 +16,12 @@ from swimapp.models.entry import Entry, EntryAdmin
 from swimapp.models.athlete_entry import AthleteEntry, AthleteEntryAdmin
 from swimapp.models.facility import Facility
 from swimapp.models.fileupload import FileUpload
+from swimapp.models.dq import DQ
+from swimapp.models.finish_place import FinishPlace
+from swimapp.models.judge import Judge
+from swimapp.models.result import Result
+from swimapp.models.violation import Violation
+from swimapp.models.false_start import FalseStart
 
 
 admin.site.register(Team)
@@ -34,3 +40,9 @@ admin.site.register(Entry, EntryAdmin)
 admin.site.register(AthleteEntry, AthleteEntryAdmin)
 admin.site.register(Facility)
 admin.site.register(FileUpload)
+admin.site.register(DQ)
+admin.site.register(FinishPlace)
+admin.site.register(Judge)
+admin.site.register(Result)
+admin.site.register(Violation)
+admin.site.register(FalseStart)
