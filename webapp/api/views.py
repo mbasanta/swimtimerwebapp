@@ -158,3 +158,15 @@ class ResultsUpload(generics.UpdateAPIView):
         #import pdb;pdb.set_trace()
         entry_id = self.request.DATA.get('id')
         return get_object_or_404(Entry, id=entry_id)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        #return Response(serializer.data)
+        return Response("Yes")

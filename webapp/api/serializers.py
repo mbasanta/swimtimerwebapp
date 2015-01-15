@@ -91,6 +91,7 @@ class ResultDqSerializer(serializers.Serializer):
     '''Serializer for DQ reasons associated with a result'''
     judge = ResultJudgeSerializer()
     reason = serializers.CharField(max_length=50)
+    violation_id = serializers.IntegerField()
 
 
 class ResultFinishPlace(serializers.Serializer):
