@@ -164,10 +164,9 @@ class ResultsUpload(generics.GenericAPIView):
 
         for elem in request.data:
             request_id = elem['id']
-            # restrict the update to the filtered queryset
+
             serializer = self.get_serializer(
                 self.get_object(request_id=request_id),
-                # self.filter_queryset(self.get_queryset()),
                 data=elem,
                 partial=partial)
 
