@@ -158,17 +158,18 @@ class ResultsUpload(generics.GenericAPIView):
         '''Override method to get object based on id in serializer'''
         return self.get_queryset().get(id=kwargs['request_id'])
 
-    def bulk_update(self, request, **kwargs):
+    def bulk_update(self, request):
         '''Iterates of the list of serialized objects to update results'''
-        partial = kwargs.pop('partial', False)
+        # Parial not currently implemented
+        # partial = kwargs.pop('partial', False)
 
         for elem in request.data:
             request_id = elem['id']
 
             serializer = self.get_serializer(
                 self.get_object(request_id=request_id),
-                data=elem,
-                partial=partial)
+                data=elem)
+                # partial=partial)
 
             if serializer.is_valid():
                 try:
@@ -185,7 +186,7 @@ class ResultsUpload(generics.GenericAPIView):
 
     def partial_bulk_update(self, request, **kwargs):
         '''Overrides bulk update method to allow for partial updates'''
-        kwargs['partial'] = True
+        # kwargs['partial'] = True
         return self.bulk_update(request, **kwargs)
 
     def put(self, request, *args, **kwargs):
