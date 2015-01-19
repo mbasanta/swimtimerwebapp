@@ -28,11 +28,14 @@ class DQManager(models.Manager):
         '''get or create a dq from the serializer data'''
         judge = Judge.objects.create_from_serializer(dq_data['judge'])
         violation = Violation.objects.get(id=dq_data['violation_id'])
-        dq = self.create(
-            reason=dq_data['reason'],
+        dq = self.get_or_create(
             entry=entry,
-            judge=judge,
-            violation=violation,)
+            judge=judge,)[0]
+
+        dq.reason = dq_data['reason']
+        dq.violation = violation
+
+        dq.save()
 
         return dq
 

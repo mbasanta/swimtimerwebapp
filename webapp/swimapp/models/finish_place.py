@@ -26,10 +26,13 @@ class FinishPlaceManager(models.Manager):
     def create_from_serializer(self, finishplace_data, entry):
         '''get or create a dq from the serializer data'''
         judge = Judge.objects.create_from_serializer(finishplace_data['judge'])
-        finishplace = self.create(
-            finish_place=finishplace_data['finish_place'],
+        finishplace = self.get_or_create(
             entry=entry,
-            judge=judge,)
+            judge=judge,)[0]
+
+        finishplace.finish_place = finishplace_data['finish_place']
+
+        finishplace.save()
 
         return finishplace
 

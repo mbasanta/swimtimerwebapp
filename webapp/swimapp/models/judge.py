@@ -27,9 +27,10 @@ class JudgeManager(models.Manager):
         try:
             user = AppUser.objects.get(email=judge.username)
             judge.user = user
-            judge.save()
         except AppUser.DoesNotExist:  # pylint:disable=E1101
             judge.user = None
+
+        judge.save()
 
         return judge
 
