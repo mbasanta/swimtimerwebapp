@@ -5,11 +5,12 @@
 # pylint: disable=R0901
 # # Too many ancestors
 
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_list_or_404
 from swimapp.models import Meet, Event, Team, Version, Entry
-from rest_framework import viewsets, generics, permissions
+from rest_framework import viewsets, generics, permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -147,14 +148,51 @@ class TeamViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, ]
 
 
-class ResultsUpload(generics.UpdateAPIView):
+class ResultsUpload(generics.GenericAPIView):
     '''Upload results api endpoint view'''
     queryset = Entry.objects.all()
     serializer_class = ResultEntrySerializer
     permission_classes = [permissions.IsAuthenticated, ]
 
-    def get_object(self):
-        '''fetch entry based on id in json'''
-        #import pdb;pdb.set_trace()
-        entry_id = self.request.DATA.get('id')
-        return get_object_or_404(Entry, id=entry_id)
+    def get_object(self, **kwargs):
+        '''Override method to get object based on id in serializer'''
+        return self.get_queryset().get(id=kwargs['request_id'])
+
+    def bulk_update(self, request):
+        '''Iterates of the list of serialized objects to update results'''
+        # Parial not currently implemented
+        # partial = kwargs.pop('partial', False)
+
+        for elem in request.data:
+            request_id = elem['id']
+
+            serializer = self.get_serializer(
+                self.get_object(request_id=request_id),
+                data=elem)
+                # partial=partial)
+
+            if serializer.is_valid():
+                try:
+                    serializer.save()
+                except ValidationError as err:
+                    return Response(
+                        err.message_dict,
+                        status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        return Response('Yes', status=status.HTTP_200_OK)
+
+    def partial_bulk_update(self, request, **kwargs):
+        '''Overrides bulk update method to allow for partial updates'''
+        # kwargs['partial'] = True
+        return self.bulk_update(request, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        '''Implement the PUT requst type'''
+        return self.bulk_update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        '''Implement the PATCH requets type'''
+        return self.partial_bulk_update(request, *args, **kwargs)

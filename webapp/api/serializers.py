@@ -13,10 +13,15 @@
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
-from swimapp.models import (Event, Team, Entry, Version, Athlete,
-                            AthleteEntry)
+from swimapp.models.athlete import Athlete
+from swimapp.models.athlete_entry import AthleteEntry
+from swimapp.models.entry import Entry
+from swimapp.models.event import Event
 from swimapp.models.facility import Facility
 from swimapp.models.meet import Meet, MeetEvent
+from swimapp.models.team import Team
+from swimapp.models.version import Version
+from swimapp.models.violation import Violation
 from rest_framework import serializers
 
 
@@ -86,6 +91,7 @@ class ResultDqSerializer(serializers.Serializer):
     '''Serializer for DQ reasons associated with a result'''
     judge = ResultJudgeSerializer()
     reason = serializers.CharField(max_length=50)
+    violation_id = serializers.IntegerField()
 
 
 class ResultFinishPlace(serializers.Serializer):
@@ -156,6 +162,16 @@ class ShortTeamSerializer(serializers.ModelSerializer):
                   'addr_country')
 
 
+class ShortViolationSerializer(serializers.ModelSerializer):
+    '''Serializer for violation summary for meet'''
+    stroke = serializers.StringRelatedField()
+
+    class Meta(object):
+        '''Django meta for ShortViolationSerializer'''
+        model = Violation
+        fields = ('id', 'violation_number', 'server_id', 'stroke', 'title')
+
+
 class MeetSerializer(serializers.ModelSerializer):
     '''Serializer for all meet info and dependencies'''
     facility = FacilitySerializer()
@@ -166,6 +182,7 @@ class MeetSerializer(serializers.ModelSerializer):
     meet_config = serializers.StringRelatedField()
     athletes_for_meet = AthleteSerializer(many=True)
     teams_for_meet = ShortTeamSerializer(many=True)
+    violations_for_meet = ShortViolationSerializer(many=True)
 
     class Meta(object):
         '''Django meta for MeetSerializer'''
@@ -174,7 +191,7 @@ class MeetSerializer(serializers.ModelSerializer):
                   'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
                   'lane_count', 'meetevent_set', 'team', 'teams',
-                  'athletes_for_meet', 'teams_for_meet')
+                  'athletes_for_meet', 'teams_for_meet', 'violations_for_meet')
 
 
 class MeetListSerializer(serializers.ModelSerializer):

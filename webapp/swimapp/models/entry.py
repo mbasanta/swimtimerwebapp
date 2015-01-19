@@ -17,10 +17,10 @@ from swimapp.models.dq import DQ
 from swimapp.models.finish_place import FinishPlace
 
 
-class EntryManager(models.Manager):  # pylint: disable=R0904
+class EntryManager(models.Manager):
     '''Static classes related to entries'''
 
-    class Meta(object):  # pylint: disable=R0903
+    class Meta(object):
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
 

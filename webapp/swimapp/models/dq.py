@@ -9,6 +9,7 @@
 
 from django.db import models
 from swimapp.models.judge import Judge
+from swimapp.models.violation import Violation
 
 
 class DQManager(models.Manager):
@@ -26,16 +27,22 @@ class DQManager(models.Manager):
     def create_from_serializer(self, dq_data, entry):
         '''get or create a dq from the serializer data'''
         judge = Judge.objects.create_from_serializer(dq_data['judge'])
-        dq = self.create(
-            reason=dq_data['reason'],
+        violation = Violation.objects.get(id=dq_data['violation_id'])
+        dq = self.get_or_create(
             entry=entry,
-            judge=judge,)
+            judge=judge,)[0]
+
+        dq.reason = dq_data['reason']
+        dq.violation = violation
+
+        dq.save()
 
         return dq
 
 
 class DQ(models.Model):
     '''DQ info'''
+    violation = models.ForeignKey(Violation)
     reason = models.CharField(max_length=500)
     entry = models.ForeignKey('swimapp.Entry')
     judge = models.ForeignKey(Judge)

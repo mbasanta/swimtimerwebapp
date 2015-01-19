@@ -1,4 +1,4 @@
-'''Classes related to a finish place'''
+'''Classes related to a false start'''
 
 # pylint: disable=C0103
 # # Invalid variable name
@@ -11,8 +11,8 @@ from django.db import models
 from swimapp.models.judge import Judge
 
 
-class FinishPlaceManager(models.Manager):
-    '''Static classes related to finish places'''
+class FalseStartManager(models.Manager):
+    '''Static classes related to false start'''
 
     class Meta(object):
         '''Meta for model to be used by django'''
@@ -20,32 +20,29 @@ class FinishPlaceManager(models.Manager):
 
     def get_queryset(self):
         '''Override manager to use select related'''
-        return super(FinishPlaceManager, self).get_queryset() \
+        return super(FalseStartManager, self).get_queryset() \
             .select_related('entry')
 
-    def create_from_serializer(self, finishplace_data, entry):
-        '''get or create a dq from the serializer data'''
-        judge = Judge.objects.create_from_serializer(finishplace_data['judge'])
-        finishplace = self.get_or_create(
+    def create_from_serializer(self, falsestart_data, entry):
+        '''get or create a false start from the serializer data'''
+        judge = Judge.objects.create_from_serializer(falsestart_data['judge'])
+        falsestart = self.create(
+            lane=falsestart_data['lane'],
             entry=entry,
-            judge=judge,)[0]
+            judge=judge,)
 
-        finishplace.finish_place = finishplace_data['finish_place']
-
-        finishplace.save()
-
-        return finishplace
+        return falsestart
 
 
-class FinishPlace(models.Model):
-    '''finish place info'''
-    finish_place = models.IntegerField()
+class FalseStart(models.Model):
+    '''false start info'''
+    lane = models.IntegerField()
     entry = models.ForeignKey('swimapp.Entry')
     judge = models.ForeignKey(Judge)
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
-    objects = FinishPlaceManager()
+    objects = FalseStartManager()
 
     class Meta(object):
         '''Meta for model to be used by django'''
@@ -56,4 +53,4 @@ class FinishPlace(models.Model):
         Define the __unicode__ method, which is used by related
         models by default.
         '''
-        return unicode(self.finish_place)
+        return 'False Start - Lane ' + unicode(self.lane)
