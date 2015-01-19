@@ -16,3 +16,9 @@ from athlete_entry import (AthleteEntry, AthleteEntryInline,
 from entry import Entry, EntryAdmin, EntryManager
 from facility import Facility, FacilityManager
 from fileupload import FileUpload, FileUploadManager
+from dq import DQ, DQManager
+from finish_place import FinishPlace, FinishPlaceManager
+from judge import Judge, JudgeManager
+from result import Result, ResultManager
+from violation import Violation, ViolationManager
+from false_start import FalseStart, FalseStartManager

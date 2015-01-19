@@ -1,4 +1,14 @@
 '''Classes related to Meet'''
+
+# pylint: disable=R0903, R0904
+# # Too few and too many public methods
+# pylint: disable=E1101
+# # Instance of xxx has not xxx member
+# pylint: disable=E0202
+# # An attribute hides this method
+# pylint: disable=E1120
+# # No value for argument in constructor call
+
 import re
 from django.db import models
 from django.db.models import Q
@@ -14,12 +24,13 @@ from swimapp.models.meet_event import MeetEvent
 from swimapp.models.meet_event import MeetEventInline
 from swimapp.models.team import Team
 from swimapp.models.facility import Facility
+from swimapp.models.violation import Violation
 
 
-class MeetManager(models.Manager):  # pylint: disable=R0904
+class MeetManager(models.Manager):
     '''Static classes related to meets'''
 
-    class Meta(object):  # pylint: disable=R0903
+    class Meta(object):
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
 
@@ -29,7 +40,7 @@ class MeetManager(models.Manager):  # pylint: disable=R0904
             .select_related('meet_type', 'course_code_1', 'course_code_2',
                             'meet_config', 'team', 'teams', 'events')
 
-    def meets_for_team(self, team):  # pylint: disable=E1002
+    def meets_for_team(self, team):
         '''Return a queryset for meets that belong to a team'''
         return super(MeetManager, self).get_queryset().filter(Q(team=team.id))
 
@@ -63,38 +74,46 @@ class Meet(models.Model):
     time_entered = models.DateTimeField(auto_now_add=True)
     time_modified = models.DateTimeField(auto_now=True)
 
-    objects = MeetManager()  # pylint: disable=E1120
+    objects = MeetManager()
 
-    class Meta:  # pylint: disable=W0232,C1001,R0903
+    class Meta(object):
         '''Meta for model to be used by django'''
         app_label = 'swimapp'
         unique_together = ('meet_name', 'start_date',)
 
     def __unicode__(self):
-    #Define the __unicode__ method, which is used by related models by default.
+        '''
+        Define the __unicode__ method, which is used by related models
+        by default.
+        '''
         return self.meet_name
 
-    def get_absolute_url(self):  # pylint: disable=E0202
+    def get_absolute_url(self):
         '''Get reverse url for meets'''
-        # pylint: disable=E1101
         return reverse('swimapp_view_meet', args=[self.id])
 
     @property
     def athletes_for_meet(self):
         '''Return distinct list of athletes that are related to this meet'''
-        # pylint: disable=E1101
         return Athlete.objects.prefetch_related().filter(
             entry__meetevent__meet=self.id).distinct()
 
     @property
     def teams_for_meet(self):
         '''Return distinct list of teams that are related to this meet'''
-        # pylint: disable=E1101
         return Team.objects.prefetch_related().filter(
             Q(meet=self) | Q(all_meet_set__team=self.team.id)
             ).distinct()
 
+    @property
+    def violations_for_meet(self):
+        '''Return distict list of violations that are related to the meet'''
+        return Violation.objects.prefetch_related().filter(
+            #meetviolation__meet=self.id
+            Q(meets=self)
+            ).distinct()
 
-class MeetAdmin(admin.ModelAdmin):  # pylint: disable=R0904
+
+class MeetAdmin(admin.ModelAdmin):
     '''Add inline editing for meet events'''
     inlines = (MeetEventInline,)
