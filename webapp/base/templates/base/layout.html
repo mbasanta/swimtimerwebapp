@@ -26,6 +26,8 @@
   {# use the CDN to get bootstrap css. can not be inside compress css block #}
   {% block cdn_css %}
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
   {% endblock cdn_css %}
 
   {% compress css %}
@@ -68,7 +70,7 @@
     {% block footer %}
     <div class="container">
       <hr>
-      <p>&copy; Clepsydra 2014</p>
+      <p>&copy; Hydro.IO 2015</p>
     </div>
     {% endblock footer %}
   </footer>
