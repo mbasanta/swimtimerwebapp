@@ -35,7 +35,7 @@ h6 {
     padding-bottom: 50px;
     text-align: center;
     color: #f8f8f8;
-    background: url(../img/intro-bg.jpg) no-repeat center center;
+    background: url(http://upload.wikimedia.org/wikipedia/commons/c/cd/231000_-_Swimming_Daniel_Bell_reflections_action_-_3b_-_2000_Sydney_event_photo.jpg) no-repeat center center;
     background-size: cover;
 }
 
@@ -116,7 +116,7 @@ h6 {
 .banner {
     padding: 100px 0;
     color: #f8f8f8;
-    background: url(../img/banner-bg.jpg) no-repeat center center;
+    background: url(http://upload.wikimedia.org/wikipedia/commons/b/b6/Swimming_Atlanta_Paralympics_%283%29.jpg) no-repeat center center;
     background-size: cover;
 }
 
