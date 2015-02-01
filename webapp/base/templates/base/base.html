@@ -1,4 +1,20 @@
 {% extends "base/layout.html" %}
 {% block navbar %}
-  {% include "base/snippets/navbar.html" %}
-{% endblock %}
+<div class="navbar navbar-default navbar-fixed-top topnav" role="navigation">
+  <div class="container topnav">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand topnav" href="#">Hydro.IO</a>
+    </div> <!-- /.navbar-header -->
+    <div class="navbar-collapse collapse">
+      {% block navbar_addons %}{% endblock %}
+      {% include "base/snippets/toggle_login.html" %}
+    </div> <!-- /.navbar-collapse -->
+  </div> <!-- /.container -->
+</div>
+{% endblock navbar %}
