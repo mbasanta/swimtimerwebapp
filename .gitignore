@@ -20,3 +20,6 @@ testing.cfg
 
 # redis stuff
 *.rdb
+
+# static files
+**/CACHE/
