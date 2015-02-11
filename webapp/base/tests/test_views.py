@@ -1,16 +1,18 @@
 '''test our views'''
-from django.core.urlresolvers import resolve
-from django.http import HttpRequest
-from django.test import TestCase
+from django.core.urlresolvers import resolve, reverse
+from django.test import TestCase, Client
 from base.views import home
-# pylint: disable=R0904
-#   Too many public methods
-# pylint: disable=C0103
-#   Invalid method name
+
+# pylint: disable=too-many-public-methods
+# pylint: disable=invalid-name
+# pylint: disable=maybe-no-member
 
 
 class HomePageTest(TestCase):
     '''Home page view tests'''
+
+    def setUp(self):
+        self.client = Client()
 
     def test_root_url_resolves_to_home_page_view(self):
         '''test home page resolves correctly'''
@@ -19,6 +21,8 @@ class HomePageTest(TestCase):
 
     def test_home_page_returns_correct_html(self):
         '''make sure we get the correct html back'''
-        request = HttpRequest()
-        response = home(request)
-        self.assertIn('<h1>Hello, world!</h1>', response.content)
+        # request = HttpRequest()
+        response = self.client.get(reverse('home'))
+        # response = home(request)
+        self.assertIn('Hydro.IO', response.content)
+        self.assertEqual(response.status_code, 200)
