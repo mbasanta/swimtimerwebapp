@@ -64,6 +64,9 @@ class Meet(models.Model):
                                       blank=True,
                                       null=True)
     lane_count = models.IntegerField(blank=True, null=True)
+    max_indiv_entries = models.IntegerField(blank=True, null=True)
+    max_relay_entries = models.IntegerField(blank=True, null=True)
+    max_entries = models.IntegerField(blank=True, null=True)
     meet_config = models.ForeignKey(MeetConfig, null=True)
     team = models.ForeignKey(Team, null=True)
     teams = models.ManyToManyField(Team, related_name='all_meet_set')
