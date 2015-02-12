@@ -190,6 +190,7 @@ class MeetSerializer(serializers.ModelSerializer):
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
+                  'max_entries', 'max_indiv_entries', 'max_relay_entries'
                   'lane_count', 'meetevent_set', 'team', 'teams',
                   'athletes_for_meet', 'teams_for_meet', 'violations_for_meet')
 
@@ -207,6 +208,7 @@ class MeetListSerializer(serializers.ModelSerializer):
         fields = ('id', 'meet_name', 'facility', 'start_date', 'end_date',
                   'age_up_date', 'meet_masters', 'meet_type',
                   'course_code_1', 'course_code_2', 'meet_config',
+                  'max_entries', 'max_indiv_entries', 'max_relay_entries'
                   'lane_count', 'team', 'teams')
 
 
