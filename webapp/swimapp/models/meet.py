@@ -1,13 +1,10 @@
 '''Classes related to Meet'''
 
-# pylint: disable=R0903, R0904
-# # Too few and too many public methods
-# pylint: disable=E1101
-# # Instance of xxx has not xxx member
-# pylint: disable=E0202
-# # An attribute hides this method
-# pylint: disable=E1120
-# # No value for argument in constructor call
+# pylint: disable=too-many-public-methods
+# pylint: disable=too-few-public-methods
+# pylint: disable=no-member
+# pylint: disable=no-value-for-parameter
+# pylint: disable=super-on-old-class
 
 import re
 from django.db import models
@@ -67,6 +64,9 @@ class Meet(models.Model):
                                       blank=True,
                                       null=True)
     lane_count = models.IntegerField(blank=True, null=True)
+    max_indiv_entries = models.IntegerField(blank=True, null=True)
+    max_relay_entries = models.IntegerField(blank=True, null=True)
+    max_entries = models.IntegerField(blank=True, null=True)
     meet_config = models.ForeignKey(MeetConfig, null=True)
     team = models.ForeignKey(Team, null=True)
     teams = models.ManyToManyField(Team, related_name='all_meet_set')
@@ -109,7 +109,7 @@ class Meet(models.Model):
     def violations_for_meet(self):
         '''Return distict list of violations that are related to the meet'''
         return Violation.objects.prefetch_related().filter(
-            #meetviolation__meet=self.id
+            # meetviolation__meet=self.id
             Q(meets=self)
             ).distinct()
 

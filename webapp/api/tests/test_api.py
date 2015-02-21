@@ -1,6 +1,6 @@
 '''tests for api teambyuser'''
-# pylint: disable=E1101, E1103
 import pytz
+import json
 from datetime import datetime
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
@@ -9,13 +9,17 @@ from swimapp.models.team import Team, TeamType, TeamRegistration
 from swimapp.models.version import Version
 from oauth2_provider.models import AccessToken, Application
 
+# pylint: disable=maybe-no-member, no-member
+# pylint: disable=too-many-public-methods
 
-class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
+class TeamsByUserTest(APITestCase):
     '''Test teamsbyuser api call'''
 
     def setUp(self):
         '''Setup tests'''
         self.client = APIClient()
+        self.datetime_now = datetime.now(pytz.utc)
+
 
         user = AppUser.objects.create(email='test@example.com')
         reg = TeamRegistration.objects.create(type_abbr='1', type_name='One')
@@ -41,7 +45,7 @@ class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
             fax='567-1234-0987',
             email='test@example.com',
         )
-        team.users_set = [user]
+        team.users.add(user)
         team.save()
 
         app = Application.objects.create(
@@ -55,13 +59,13 @@ class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
             user=user,
             token='test_token',
             application=app,
-            expires=datetime(year=2050, month=1, day=1, tzinfo=pytz.utc),
+            expires=datetime(year=2050, month=1, day=1),
             scope='scope'
         )
 
         Version.objects.create(
             version=1,
-            datetime=datetime.now(pytz.timezone('America/New_York'))
+            datetime=self.datetime_now
         )
 
     def test_api_without_parameter(self):
@@ -73,14 +77,14 @@ class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
         response = self.client.get('/api/teamsbyuser/none@none.com/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         response = self.client.get('/api/teamsbyuser/user/?email=none@na.com')
-        #self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_api_authorized(self):
         '''test api response data'''
         self.client.credentials(HTTP_AUTHORIZATION='Bearer test_token')
 
         response = self.client.get('/api/teamsbyuser/test@example.com/')
-        #self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         response = self.client.get(
             '/api/teamsbyuser/user/?email=test@example.com')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -95,4 +99,25 @@ class TeamsByUserTest(APITestCase):  # pylint: disable=R0904
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_api_response_data(self):
-        pass
+        '''test to make sure response data is correct'''
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer test_token')
+        data = [{
+            "id":1, "team_name":"team_name", "team_abbr":"abbr", \
+            "team_color1":"#111111", "team_color2":"#222222", \
+            "addr_name":"addr_name", "addr":"addr", \
+            "addr_city":"addr_city", "addr_state":"KY", \
+            "addr_zip":"40514", "addr_country":"USA", "meet_set":[] \
+        }]
+        response = self.client.get(
+            '/api/teamsbyuser/test@example.com/')
+        alt_response = self.client.get(
+            '/api/teamsbyuser/user/?email=test@example.com')
+        self.assertEqual(response.rendered_content,
+                         alt_response.rendered_content)
+        self.assertEqual(response.data, data)
+        response_json = json.loads(response.rendered_content)
+        self.assertEqual(self.datetime_now.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                         response_json['timestamp'])
+        self.assertEqual(response_json['version']['version_number'], 1)
+        self.assertEqual(response_json['version']['version_date'],
+                         self.datetime_now.strftime('%Y-%m-%dT%H:%M:%SZ'))
