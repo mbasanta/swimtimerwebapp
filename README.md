@@ -1,29 +1,29 @@
-# README #
+## Hydro.iO
 
-This README would normally document whatever steps are necessary to get your application up and running.
+### Requirements
 
-### What is this repository for? ###
+Before starting, make sure you have the following installed:
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* PostgreSQL
+* python
+* pip
+* It's recommended to use a virtual environment for dependencies.  On Mac OS:
+    * `sudo pip install virtualenv`
+    * `sudo pip install virtualenvwrapper`
+    * Finally, add the following to your `~/.bash_profile`:
+        * `source /usr/local/bin/virtualenvwrapper.sh`
 
-### How do I get set up? ###
+### Getting Started
+As mentioned, it's recommended to use a virtual environment for the project dependencies.  This will prevent your local python installation from getting clouded with dependencies that might not jive with other projects.  It also makes it easy to mymic different deployment environments.  For example:
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+```bash
+$ mkvirtualenv hydro-io
+New python executable in hydro-io/bin/python
+Installing setuptools, pip...done.
+(hydro-io)$ 
+```
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+Now, let's install our dependencies:
+```bash
+(hydro-io)$ sudo pip install -r requirements.txt
+```
